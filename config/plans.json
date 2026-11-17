@@ -1,0 +1,37 @@
+{
+  "currency": "EUR",
+  "vat_rate": 0.19,
+  "prices_include_vat": true,
+  "trial_days": 7,
+  "plans": {
+    "free": {
+      "label_de": "Kostenlos",
+      "price_month": 0,
+      "features": ["basic_scan", "breach_check", "security_checklist", "password_check", "scam_check", "domain_check", "image_integrity", "social_privacy", "report_preview", "deletion_helper", "timeline", "results_database"]
+    },
+    "premium": {
+      "label_de": "Premium",
+      "price_month": 3.99,
+      "price_year": 39.99,
+      "features": ["*"]
+    },
+    "family": {
+      "label_de": "Familie",
+      "price_month": 5.99,
+      "included_persons": 2,
+      "extra_person_month": 1.0,
+      "max_persons": 6,
+      "annual_months_charged": 10,
+      "features": ["*"]
+    }
+  },
+  "one_time_report": { "label_de": "Einmal-Report", "price": 9.0 },
+  "most_popular": null,
+  "limits": {
+    "free":    { "breach_check_per_month": 1, "basic_scan_per_month": 2, "deep_scan_per_month": 0, "scam_check_per_day": 10, "domain_check_per_day": 5, "image_per_day": 5, "ai_per_day": 0, "monitor": false },
+    "premium": { "breach_check_per_month": 31, "basic_scan_per_month": 60, "deep_scan_per_month": 10, "scam_check_per_day": 100, "domain_check_per_day": 50, "image_per_day": 50, "ai_per_day": 30, "monitor": true }
+  },
+  "premium_features": ["monitor", "ai_assistant", "deep_scan", "subscription_guard", "document_scanner", "digital_estate", "relation_graph", "full_report", "deletion_pdf"],
+  "referral_free_months": 1,
+  "abuse": { "max_distinct_names": 3, "max_identifiers": 20 }
+}

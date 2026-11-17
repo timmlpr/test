@@ -1,0 +1,22 @@
+{
+  "name": "Fadeprint",
+  "tagline_de": "Mach deinen digitalen Fußabdruck kleiner.",
+  "tagline_en": "Make your digital footprint smaller.",
+  "domain": "fadeprint.example",
+  "support_email": "hilfe@fadeprint.example",
+  "colors": { "primary": "#2563eb", "accent": "#10b981" },
+  "default_address_form": "du",
+  "operator": {
+    "company": "[FIRMA / NAME DES BETREIBERS]",
+    "legal_form": "[RECHTSFORM]",
+    "street": "[STRASSE NR.]",
+    "city": "[PLZ ORT]",
+    "country": "Deutschland",
+    "email": "[E-MAIL]",
+    "phone": "[TELEFON]",
+    "register": "[REGISTERGERICHT, HRB]",
+    "vat_id": "[USt-IdNr.]",
+    "representative": "[VERTRETUNGSBERECHTIGTE PERSON]",
+    "small_business": true
+  }
+}
