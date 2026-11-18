@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Calm, banking-app-like palette. Contrast pairs checked for WCAG AA (4.5:1 for text). */
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --muted: 210 40% 94%;
+    --muted-foreground: 215 19% 35%;
+    --border: 214 32% 88%;
+    --input: 214 32% 80%;
+    --ring: 221 83% 53%;
+    --primary: 221 83% 45%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 160 84% 28%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 42%;
+    --destructive-foreground: 0 0% 100%;
+    --ok: 152 69% 31%;
+    --warn: 35 92% 40%;
+    --bad: 0 72% 45%;
+  }
+  .dark {
+    --background: 222 47% 7%;
+    --foreground: 210 40% 96%;
+    --card: 222 40% 11%;
+    --card-foreground: 210 40% 96%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 72%;
+    --border: 217 33% 22%;
+    --input: 217 33% 30%;
+    --ring: 213 94% 68%;
+    --primary: 213 94% 68%;
+    --primary-foreground: 222 47% 11%;
+    --accent: 158 64% 52%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 65%;
+    --destructive-foreground: 222 47% 11%;
+    --ok: 152 60% 50%;
+    --warn: 38 92% 60%;
+    --bad: 0 84% 65%;
+  }
+  * { @apply border-border; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { @apply bg-background text-foreground antialiased; }
+  :focus-visible { @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background; }
+  h1, h2, h3 { @apply tracking-tight; }
+}
+
+@layer components {
+  .prose-fp h1 { @apply text-3xl font-bold mb-4; }
+  .prose-fp h2 { @apply text-xl font-semibold mt-8 mb-3; }
+  .prose-fp h3 { @apply text-lg font-semibold mt-6 mb-2; }
+  .prose-fp p { @apply mb-4 leading-7; }
+  .prose-fp ul { @apply list-disc pl-6 mb-4 space-y-1; }
+  .prose-fp ol { @apply list-decimal pl-6 mb-4 space-y-1; }
+  .prose-fp a { @apply text-primary underline underline-offset-2; }
+  .prose-fp blockquote { @apply border-l-4 border-primary/40 pl-4 italic text-muted-foreground mb-4; }
+  .prose-fp code { @apply rounded bg-muted px-1 py-0.5 text-sm; }
+  .prose-fp table { @apply w-full text-sm mb-4; }
+  .prose-fp td, .prose-fp th { @apply border px-2 py-1 text-left align-top; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

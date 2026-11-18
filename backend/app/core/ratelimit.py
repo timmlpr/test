@@ -13,7 +13,9 @@ ENABLED = True
 
 
 def hit(key: str, limit: int, window_s: int) -> None:
-    if not ENABLED:
+    from app.settings import get_settings
+
+    if not ENABLED or not get_settings().ratelimit_enabled:
         return
     t = time.monotonic()
     with _lock:

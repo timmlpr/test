@@ -99,7 +99,7 @@ def checkout(body: CheckoutIn, user: User = Depends(current_user), db: Session =
         db.add(OneTimeToken(token_hash=lookup_hash(tok), user_id=user.id, purpose="demo_checkout",
                             data=json.dumps({**meta, "amount": cents, "trial_days": trial_days}), expires_at=now() + timedelta(minutes=30)))
         db.commit()
-        return {"url": f"{base}/app/billing/demo-checkout?token={tok}", "demo": True,
+        return {"url": f"/app/billing/demo-checkout?token={tok}", "demo": True,
                 "summary": {"name": name, "amount": cents / 100, "trial_days": trial_days}}
     s = _stripe()
     if not user.stripe_customer_id:

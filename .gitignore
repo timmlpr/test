@@ -14,3 +14,7 @@ frontend/test-results/
 frontend/playwright-report/
 *.log
 backups/
+frontend/src/config/
+frontend/src/content/legal/
+frontend/next-env.d.ts
+frontend/tsconfig.tsbuildinfo

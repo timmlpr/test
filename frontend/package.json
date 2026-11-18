@@ -1,0 +1,37 @@
+{
+  "name": "fadeprint-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "next lint",
+    "typecheck": "node scripts/sync-content.mjs && tsc --noEmit",
+    "e2e": "playwright test --trace off",
+    "predev": "node scripts/sync-content.mjs",
+    "prebuild": "node scripts/sync-content.mjs"
+  },
+  "dependencies": {
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "d3-force": "3.0.0",
+    "lucide-react": "0.468.0",
+    "next": "16.4.6",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "recharts": "3.2.1",
+    "tailwind-merge": "2.6.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/d3-force": "3.0.10",
+    "@types/node": "22.10.2",
+    "@types/react": "19.1.12",
+    "@types/react-dom": "19.1.9",
+    "autoprefixer": "10.4.20",
+    "postcss": "8.4.49",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.7.2"
+  }
+}

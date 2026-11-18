@@ -68,6 +68,7 @@ class Settings(BaseSettings):
     upload_dir: str = str(ROOT / "backend" / "uploads")
     upload_ttl_hours: int = 24
     scheduler_enabled: bool = True
+    ratelimit_enabled: bool = True  # only ever false for automated e2e runs
 
     @property
     def is_prod(self) -> bool:

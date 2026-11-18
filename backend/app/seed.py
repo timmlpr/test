@@ -1,8 +1,8 @@
 """Demo seed (DEMO_MODE only). Creates clearly marked sample accounts and data so every screen is clickable.
 
-  demo@fadeprint.local   / FadeprintDemo1!   – premium (demo subscription), full sample data
-  free@fadeprint.local   / FadeprintDemo1!   – free plan, to see plan gating
-  admin@fadeprint.local  / FadeprintAdmin1!  – admin, TOTP secret DEMO_ADMIN_TOTP (dev only!)
+  demo@demo.example.com   / FadeprintDemo1!   – premium (demo subscription), full sample data
+  free@demo.example.com   / FadeprintDemo1!   – free plan, to see plan gating
+  admin@demo.example.com  / FadeprintAdmin1!  – admin, TOTP secret DEMO_ADMIN_TOTP (dev only!)
 """
 from __future__ import annotations
 
@@ -55,11 +55,11 @@ def _ident(db, u: User, kind: str, value: str) -> Identifier:
 
 def seed_demo() -> None:
     with SessionLocal() as db:
-        if db.scalar(select(User).where(User.email_hash == lookup_hash("demo@fadeprint.local"))):
+        if db.scalar(select(User).where(User.email_hash == lookup_hash("demo@demo.example.com"))):
             return
-        demo = _user(db, "demo@fadeprint.local", DEMO_PASSWORD, "Alex Beispiel", plan="premium")
-        free = _user(db, "free@fadeprint.local", DEMO_PASSWORD, "Kim Muster")
-        _user(db, "admin@fadeprint.local", ADMIN_PASSWORD, "Admin", role="admin", totp_secret=DEMO_ADMIN_TOTP, totp_enabled=True)
+        demo = _user(db, "demo@demo.example.com", DEMO_PASSWORD, "Alex Beispiel", plan="premium")
+        free = _user(db, "free@demo.example.com", DEMO_PASSWORD, "Kim Muster")
+        _user(db, "admin@demo.example.com", ADMIN_PASSWORD, "Admin", role="admin", totp_secret=DEMO_ADMIN_TOTP, totp_enabled=True)
         db.add(Subscription(user_id=demo.id, plan="premium", interval="month", status="active", stripe_subscription_id="demo_seed_sub",
                             current_period_end=now() + timedelta(days=21)))
         for u, name in ((demo, "Alex Beispiel"), (free, "Kim Muster")):
