@@ -129,3 +129,9 @@ M11 graph/assistant/voice · M12 legal/blog/scripts/launch · M13 hardening/depl
 * `backend/tests` (pytest): risk score, rule engine, anonymiser, pricing, guard, API flows per module,
   Stripe webhook (signed test events), hard-limit tests.
 * `frontend/e2e` (Playwright): landing, login with demo user, every app page renders, hard-limit UI.
+
+## 9. Status / changes during the build
+* Next.js **16** instead of 15: 15.x carried published advisories (postcss/sharp chain) at build time; 16.4.6 audits clean.
+* Backend dependencies pinned to the current releases (2026-11); `pip-audit` and `npm audit` report 0 known vulnerabilities.
+* Demo accounts use `@demo.example.com` (email validation rejects the special-use `.local` TLD).
+* Docker builds behind TLS-intercepting proxies: optional BuildKit secret `ca` (see docs/DEPLOYMENT.md).

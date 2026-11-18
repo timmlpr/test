@@ -250,8 +250,8 @@ async def image_strip(file: UploadFile = File(...), user: User = Depends(current
     raw = await file.read()
     img = _load_image(raw)
     fmt = (img.format or "PNG").upper()
-    clean = Image.new(img.mode, img.size)
-    clean.putdata(list(img.getdata()))
+    # Rebuild from raw pixels → no EXIF/XMP/ICC metadata survives.
+    clean = Image.frombytes(img.mode, img.size, img.tobytes())
     out = io.BytesIO()
     if fmt in ("JPEG", "MPO"):
         clean.convert("RGB").save(out, "JPEG", quality=95)

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import logging
 import secrets
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -39,8 +40,22 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
 def create_app() -> FastAPI:
     s = get_settings()
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        from app.bootstrap import bootstrap
+
+        bootstrap()
+        sched = None
+        if s.scheduler_enabled:
+            from app.jobs import start_scheduler
+
+            sched = start_scheduler()
+        yield
+        if sched:
+            sched.shutdown(wait=False)
+
     app = FastAPI(title=f"{brand()['name']} API", version="1.0.0", docs_url=None if s.is_prod else "/api/docs",
-                  openapi_url=None if s.is_prod else "/api/openapi.json")
+                  openapi_url=None if s.is_prod else "/api/openapi.json", lifespan=lifespan)
     app.add_middleware(SecurityMiddleware)
 
     @app.exception_handler(RequestValidationError)
@@ -100,16 +115,6 @@ def create_app() -> FastAPI:
             from app.core.mailer import OUTBOX
 
             return list(reversed(OUTBOX))
-
-    @app.on_event("startup")
-    def _startup():
-        from app.bootstrap import bootstrap
-
-        bootstrap()
-        if s.scheduler_enabled:
-            from app.jobs import start_scheduler
-
-            app.state.scheduler = start_scheduler()
 
     return app
 
