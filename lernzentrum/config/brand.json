@@ -1,0 +1,18 @@
+{
+  "name": "Lernzentrum",
+  "tagline": "Zuhören. Verstehen. Bestehen.",
+  "short_name": "Lernzentrum",
+  "colors": {
+    "primary": "#2F5D8C",
+    "primary_dark": "#8DB4DE",
+    "accent": "#3E8E7E",
+    "background": "#F7F6F2",
+    "background_dark": "#14171C",
+    "sicher": "#1F8A4C",
+    "pruefen": "#B7860B",
+    "unsicher": "#C0392B"
+  },
+  "module_palette": ["#2F5D8C", "#3E8E7E", "#8E5B3E", "#6B4E9B", "#B5523B", "#4D7A2E", "#9B4E7A", "#2E7A86"],
+  "locale": "de",
+  "support_note": "Private Lern-App. Kein Einsatz in Prüfungen."
+}
