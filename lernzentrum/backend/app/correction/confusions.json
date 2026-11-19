@@ -1,0 +1,551 @@
+{
+ "_comment": "ASR confusion table (data-driven, extensible). laws: mis-heard law slot (upper case, spaces removed) -> candidates with prior weight. terms: mis-heard phrase (lower case) -> correct term; safe=true means the wrong form is not a normal German phrase (may auto-apply). vocabulary: domain terms used for split/merged-word repair and the Whisper prompt.",
+ "laws": {
+  "WWW": [
+   [
+    "BGB",
+    1.0
+   ]
+  ],
+  "WEWEWE": [
+   [
+    "BGB",
+    1.0
+   ]
+  ],
+  "BKB": [
+   [
+    "BGB",
+    1.0
+   ]
+  ],
+  "BEBE": [
+   [
+    "BGB",
+    0.9
+   ]
+  ],
+  "BEGEBE": [
+   [
+    "BGB",
+    1.0
+   ]
+  ],
+  "PGB": [
+   [
+    "BGB",
+    1.0
+   ]
+  ],
+  "BGP": [
+   [
+    "BGB",
+    1.0
+   ]
+  ],
+  "BCB": [
+   [
+    "BGB",
+    0.9
+   ]
+  ],
+  "BBG": [
+   [
+    "BGB",
+    0.8
+   ]
+  ],
+  "DGB": [
+   [
+    "BGB",
+    0.85
+   ]
+  ],
+  "BEGB": [
+   [
+    "BGB",
+    1.0
+   ]
+  ],
+  "BGBE": [
+   [
+    "BGB",
+    1.0
+   ]
+  ],
+  "WGB": [
+   [
+    "BGB",
+    0.9
+   ]
+  ],
+  "HGP": [
+   [
+    "HGB",
+    1.0
+   ]
+  ],
+  "HKB": [
+   [
+    "HGB",
+    1.0
+   ]
+  ],
+  "HAGEBE": [
+   [
+    "HGB",
+    1.0
+   ]
+  ],
+  "AGB": [
+   [
+    "HGB",
+    0.6
+   ],
+   [
+    "BGB",
+    0.3
+   ]
+  ],
+  "HGW": [
+   [
+    "HGB",
+    0.9
+   ]
+  ],
+  "ESTEGE": [
+   [
+    "EStG",
+    1.0
+   ]
+  ],
+  "ESTE": [
+   [
+    "EStG",
+    0.7
+   ]
+  ],
+  "ESDG": [
+   [
+    "EStG",
+    1.0
+   ]
+  ],
+  "ESTK": [
+   [
+    "EStG",
+    0.9
+   ]
+  ],
+  "ISTG": [
+   [
+    "EStG",
+    0.9
+   ]
+  ],
+  "ESG": [
+   [
+    "EStG",
+    0.8
+   ]
+  ],
+  "ESTGE": [
+   [
+    "EStG",
+    1.0
+   ]
+  ],
+  "USDG": [
+   [
+    "UStG",
+    1.0
+   ]
+  ],
+  "USTEGE": [
+   [
+    "UStG",
+    1.0
+   ]
+  ],
+  "USTGE": [
+   [
+    "UStG",
+    1.0
+   ]
+  ],
+  "USG": [
+   [
+    "UStG",
+    0.8
+   ]
+  ],
+  "OSTG": [
+   [
+    "UStG",
+    0.85
+   ]
+  ],
+  "KSDG": [
+   [
+    "KStG",
+    1.0
+   ]
+  ],
+  "KASTG": [
+   [
+    "KStG",
+    1.0
+   ]
+  ],
+  "KSG": [
+   [
+    "KStG",
+    0.8
+   ]
+  ],
+  "AOH": [
+   [
+    "AO",
+    0.9
+   ]
+  ],
+  "AHO": [
+   [
+    "AO",
+    0.9
+   ]
+  ],
+  "AU": [
+   [
+    "AO",
+    0.6
+   ]
+  ],
+  "ZETPEO": [
+   [
+    "ZPO",
+    1.0
+   ]
+  ],
+  "ZPOH": [
+   [
+    "ZPO",
+    0.9
+   ]
+  ],
+  "CPO": [
+   [
+    "ZPO",
+    0.9
+   ]
+  ],
+  "INSO": [
+   [
+    "InsO",
+    1.0
+   ]
+  ],
+  "INSOH": [
+   [
+    "InsO",
+    0.9
+   ]
+  ],
+  "INZO": [
+   [
+    "InsO",
+    0.9
+   ]
+  ],
+  "GMBHGE": [
+   [
+    "GmbHG",
+    1.0
+   ]
+  ],
+  "GMBHG": [
+   [
+    "GmbHG",
+    1.0
+   ]
+  ],
+  "AKTGE": [
+   [
+    "AktG",
+    1.0
+   ]
+  ],
+  "GEWSTGE": [
+   [
+    "GewStG",
+    1.0
+   ]
+  ],
+  "GEWSDG": [
+   [
+    "GewStG",
+    1.0
+   ]
+  ],
+  "BEWGE": [
+   [
+    "BewG",
+    1.0
+   ]
+  ],
+  "ERBSDG": [
+   [
+    "ErbStG",
+    1.0
+   ]
+  ],
+  "STBERGE": [
+   [
+    "StBerG",
+    1.0
+   ]
+  ],
+  "STEUERBERG": [
+   [
+    "StBerG",
+    0.8
+   ]
+  ]
+ },
+ "terms": {
+  "kulpa in kontrahendo": [
+   "culpa in contrahendo",
+   true
+  ],
+  "culpa in kontrahendo": [
+   "culpa in contrahendo",
+   true
+  ],
+  "kulpa in contrahendo": [
+   "culpa in contrahendo",
+   true
+  ],
+  "kondiktio indebiti": [
+   "condictio indebiti",
+   true
+  ],
+  "pakta sunt servanda": [
+   "pacta sunt servanda",
+   true
+  ],
+  "invitatio at offerendum": [
+   "invitatio ad offerendum",
+   true
+  ],
+  "invitazio ad offerendum": [
+   "invitatio ad offerendum",
+   true
+  ],
+  "essenzialia negotii": [
+   "essentialia negotii",
+   true
+  ],
+  "essentialia negozii": [
+   "essentialia negotii",
+   true
+  ],
+  "falsa demonstrazio non nocet": [
+   "falsa demonstratio non nocet",
+   true
+  ],
+  "venire kontra faktum proprium": [
+   "venire contra factum proprium",
+   true
+  ],
+  "lex spezialis": [
+   "lex specialis",
+   true
+  ],
+  "ex tunk": [
+   "ex tunc",
+   true
+  ],
+  "ex nunk": [
+   "ex nunc",
+   true
+  ],
+  "prima fazie": [
+   "prima facie",
+   true
+  ],
+  "willens erklärung": [
+   "Willenserklärung",
+   true
+  ],
+  "anschaffungs kosten": [
+   "Anschaffungskosten",
+   true
+  ],
+  "herstellungs kosten": [
+   "Herstellungskosten",
+   true
+  ],
+  "ab schreibung": [
+   "Abschreibung",
+   false
+  ],
+  "absetzung für abnutzung": [
+   "Absetzung für Abnutzung",
+   false
+  ],
+  "werbungs kosten": [
+   "Werbungskosten",
+   true
+  ],
+  "sonder ausgaben": [
+   "Sonderausgaben",
+   true
+  ],
+  "rechnungs abgrenzungsposten": [
+   "Rechnungsabgrenzungsposten",
+   true
+  ],
+  "rück stellungen": [
+   "Rückstellungen",
+   true
+  ],
+  "gefahr übergang": [
+   "Gefahrübergang",
+   true
+  ],
+  "eigentums vorbehalt": [
+   "Eigentumsvorbehalt",
+   true
+  ],
+  "besitz konstitut": [
+   "Besitzkonstitut",
+   true
+  ],
+  "anspruchs grundlage": [
+   "Anspruchsgrundlage",
+   true
+  ],
+  "abstraktions prinzip": [
+   "Abstraktionsprinzip",
+   true
+  ],
+  "trennungs prinzip": [
+   "Trennungsprinzip",
+   true
+  ],
+  "vor steuer abzug": [
+   "Vorsteuerabzug",
+   true
+  ],
+  "betriebs vermögen": [
+   "Betriebsvermögen",
+   true
+  ],
+  "gewinn ermittlung": [
+   "Gewinnermittlung",
+   true
+  ],
+  "einnahmen überschussrechnung": [
+   "Einnahmenüberschussrechnung",
+   true
+  ],
+  "festsetzungs verjährung": [
+   "Festsetzungsverjährung",
+   true
+  ]
+ },
+ "vocabulary": [
+  "Willenserklärung",
+  "Rechtsgeschäft",
+  "Geschäftsfähigkeit",
+  "Anspruchsgrundlage",
+  "Kaufvertrag",
+  "Verjährung",
+  "Verjährungsfrist",
+  "Gefahrübergang",
+  "Abstraktionsprinzip",
+  "Trennungsprinzip",
+  "Eigentumsvorbehalt",
+  "Besitzkonstitut",
+  "Schadensersatz",
+  "Leistungsstörung",
+  "Nacherfüllung",
+  "Rücktritt",
+  "Minderung",
+  "Anfechtung",
+  "Stellvertretung",
+  "Vertretungsmacht",
+  "Verfügungsgeschäft",
+  "Verpflichtungsgeschäft",
+  "Übereignung",
+  "Eigentum",
+  "Besitz",
+  "Gutgläubiger",
+  "Bereicherungsrecht",
+  "Deliktsrecht",
+  "Gewährleistung",
+  "Mängelrechte",
+  "Anschaffungskosten",
+  "Herstellungskosten",
+  "Abschreibung",
+  "Vorsteuer",
+  "Vorsteuerabzug",
+  "Umsatzsteuer",
+  "Verbindlichkeiten",
+  "Forderungen",
+  "Rückstellungen",
+  "Rechnungsabgrenzungsposten",
+  "Eigenkapital",
+  "Fremdkapital",
+  "Bilanz",
+  "Gewinn",
+  "Verlustvortrag",
+  "Buchungssatz",
+  "Sollbuchung",
+  "Habenbuchung",
+  "Inventur",
+  "Inventar",
+  "Jahresabschluss",
+  "Gewinn- und Verlustrechnung",
+  "Betriebsvermögen",
+  "Gewinnermittlung",
+  "Einnahmenüberschussrechnung",
+  "Betriebsausgaben",
+  "Betriebseinnahmen",
+  "Werbungskosten",
+  "Sonderausgaben",
+  "Außergewöhnliche Belastungen",
+  "Einkunftsarten",
+  "Gewerbebetrieb",
+  "Mitunternehmerschaft",
+  "Steuerbescheid",
+  "Einspruchsverfahren",
+  "Festsetzungsverjährung",
+  "Betriebsprüfung",
+  "Steuerpflicht",
+  "Kleinunternehmer",
+  "Reverse-Charge",
+  "Innergemeinschaftliche Lieferung",
+  "Organschaft",
+  "Teileinkünfteverfahren",
+  "Abgeltungsteuer",
+  "Grundfreibetrag",
+  "Splittingverfahren",
+  "Absetzung für Abnutzung",
+  "culpa in contrahendo",
+  "condictio indebiti",
+  "pacta sunt servanda",
+  "invitatio ad offerendum",
+  "essentialia negotii",
+  "falsa demonstratio non nocet",
+  "venire contra factum proprium",
+  "lex specialis",
+  "ex tunc",
+  "ex nunc",
+  "prima facie",
+  "inter partes",
+  "de lege lata",
+  "de lege ferenda",
+  "ultima ratio"
+ ]
+}

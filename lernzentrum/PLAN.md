@@ -125,3 +125,17 @@ M1 skeleton/design/PWA/auth/wizard/demo · M2 modules + ICS · M3 inbox & librar
 M5 retrieval & statutes · M6 live core · M7 live extras · M8 Moodle · M9 package/flashcards/quiz/mock/radar/gaps ·
 M10 glossary/statute finder/case practice/notes/profile/history · M11 dashboard/plan/stats/health · M12 hardening & deploy.
 Each milestone: code + tests + commit.
+
+## 11. Addendum – Kontext-Korrektur (transcript correction)
+
+Package `backend/app/correction/`: `phonetic.py` (Kölner Phonetik, German letter names, number words),
+`lexicon.py` (curated law abbreviations + section ranges, subject areas, official list from gesetze-im-internet.de
+`gii-toc.xml`, exact section sets from loaded laws), `confusions.json` (data-driven ASR confusion table),
+`engine.py` (layers 2 + 3 + 5: citation grammar, candidates, existence check, context scoring, policy – pure,
+no DB, < 300 ms), `service.py` (DB integration: context, learned rules, segment storage, user actions,
+LLM adjudicator job = layer 4, batch re-correction job, Whisper vocabulary prompt = layer 1).
+Data: `transcript_segments.original_text` (immutable) + `edits` JSON + `correction_conf/status`; `text` = corrected
+(so retrieval, questions, answers, statute quotes, slide matching consume corrected text); `chunks.alt_text`
+indexes the original as well; `correction_rules` table (user rules, vocabulary, learned confusion weights,
+module-scoped or global). Policy: ≥ auto (90) applied, ≥ mark (60) applied + marked, below → unclear, not applied.
+Deviation: Groq's Whisper endpoint has no hotword parameter → layer 1 uses the `prompt` parameter only.
