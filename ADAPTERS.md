@@ -24,6 +24,8 @@ Terms were checked on **2026-11-17**. Re-check before launch (links below).
 | `urlhaus` | scam | free Auth-Key | off until key | 5,000/day | Key required since 2025-06-30; keyless feed returns 410 |
 | `hibp_email` | breach | paid | off | 6 s interval | Paid subscription |
 | `tineye` | image | paid | off | – | Paid; free alternative = manual reverse-search links |
+| `sms_seven` | phone verification | paid | off until key | 500/day | seven.io, Germany; only for ownership codes |
+| Gmail API (in `modules/vault.py`) | subscription guard | Google OAuth | off until configured | 500 messages per sync | scope `gmail.metadata` – headers only |
 | `demo` | all | none | DEMO_MODE only | – | deterministic sample data, labelled "Demo" |
 
 Deliberately **not** built: PhishTank (registrations closed), any scraping of sites that forbid it, any people-search

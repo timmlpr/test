@@ -9,7 +9,7 @@ COPY backend/requirements.txt .
 # Optional extra CA (corporate TLS proxy): docker build --secret id=ca,src=/path/ca.crt
 RUN --mount=type=secret,id=ca,required=false \
     if [ -f /run/secrets/ca ]; then export PIP_CERT=/run/secrets/ca; fi; \
-    pip install -r requirements.txt pytesseract==0.3.13
+    pip install -r requirements.txt
 COPY backend/ /app/
 COPY config/ /config/
 ENV FP_CONFIG_DIR=/config UPLOAD_DIR=/data/uploads

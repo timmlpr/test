@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { FileSpreadsheet } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -12,11 +14,13 @@ import { useAction, useApi } from "@/lib/hooks";
 import { useT } from "@/lib/i18n";
 import { eur, fmtDate } from "@/lib/utils";
 
-export default function Subs() {
+function Subs() {
   const { t } = useT();
   const { data, error, reload } = useApi<any>("/subs");
   const { run, busy, error: e2 } = useAction();
   if (error) return <div><PageHeader title={t("subs.title")} explain={t("subs.explain")} premium /><ErrorNotice error={error} /></div>;
+  const connected = useSearchParams().get("mailbox") === "connected";
+  const mb = data?.mailbox;
   const upload = (f: File) => run(async () => { const fd = new FormData(); fd.append("file", f); await api("/subs/upload", { form: fd }); reload(); });
   return (
     <div className="space-y-6">
@@ -28,7 +32,23 @@ export default function Subs() {
         <details className="text-sm"><summary className="cursor-pointer text-primary">{t("subs.howto")}</summary>
           <ul className="mt-2 list-disc pl-5 text-muted-foreground"><li>Gmail: takeout.google.com → nur „Mail“ wählen → .mbox</li><li>Thunderbird: Rechtsklick auf Ordner → „Exportieren“ bzw. Add-on ImportExportTools NG</li>
             <li>Outlook/Apple Mail: einzelne Mails als .eml speichern und als .zip hochladen</li></ul></details>
-        <p className="text-xs text-muted-foreground">{t("subs.oauth")}</p>
+        <div className="space-y-2 border-t pt-3">
+          <p className="text-sm font-medium">{t("subs.mailboxTitle")}</p>
+          <p className="text-xs text-muted-foreground">{t("subs.mailboxHint")}</p>
+          {connected && <Alert kind="ok">{t("subs.mailboxConnected")}</Alert>}
+          {mb?.connected ? (
+            <div className="flex flex-wrap items-center gap-2 text-sm">
+              <Badge variant="ok">{mb.address ?? "Gmail"}</Badge>
+              <span className="text-xs text-muted-foreground">{t("subs.mailboxLast")}: {fmtDate(mb.last_sync, true)}</span>
+              <Button size="sm" variant="outline" disabled={busy} onClick={() => run(async () => { await api("/subs/mailbox/sync", { method: "POST" }); reload(); })}>{t("subs.mailboxSync")}</Button>
+              <Button size="sm" variant="ghost" disabled={busy} onClick={() => run(async () => { await api("/subs/mailbox", { method: "DELETE" }); reload(); })}>{t("subs.mailboxDisconnect")}</Button>
+            </div>
+          ) : mb?.available ? (
+            <a href="/api/subs/mailbox/start" className="inline-block text-sm font-medium text-primary underline">{t("subs.mailboxConnect")}</a>
+          ) : (
+            <p className="text-xs text-muted-foreground">{t("subs.oauth")}</p>
+          )}
+        </div>
         <ErrorNotice error={e2} />
       </CardContent></Card>
       {data && (
@@ -56,3 +76,5 @@ export default function Subs() {
     </div>
   );
 }
+
+export default function Page() { return <Suspense><Subs /></Suspense>; }

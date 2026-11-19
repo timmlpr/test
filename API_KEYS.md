@@ -29,6 +29,18 @@ Enter keys either in `.env` or in the app: **Admin → Schlüssel & Quoten** (st
 ### Web Push (VAPID) – push notifications (no account)
 `npx web-push generate-vapid-keys` → `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`.
 
+### seven.io – SMS codes for phone verification
+1. https://app.seven.io/signup → top up credit (pay per SMS, EU provider).
+2. *Developer → API keys* → create. `.env`: `SMS_PROVIDER=seven`, `SMS_API_KEY=...`, optional `SMS_SENDER=Fadeprint` (max. 11 characters).
+Without it, phone codes appear only in the dev outbox (demo/dev); in production phone verification is shown as unavailable.
+
+### Gmail connection – subscription guard (read-only)
+Uses the Google OAuth client from "Google sign-in" below. Additionally: *APIs & Services → Library → Gmail API → Enable*;
+*OAuth consent screen → Scopes → add* `https://www.googleapis.com/auth/gmail.metadata`; authorised redirect URI
+`https://<domain>/api/subs/mailbox/callback`. `gmail.metadata` is a **restricted scope**: up to 100 test users work
+immediately; a public launch needs Google's app verification incl. a third-party security assessment (CASA) – plan weeks.
+Fadeprint reads headers only, stores the refresh token encrypted, and revokes it on disconnect or account deletion.
+
 ## Accounts needed for login / payments
 * **Stripe** (test mode free): https://dashboard.stripe.com/register → *Developers → API keys* → `STRIPE_SECRET_KEY=sk_test_...`.
   Webhook: *Developers → Webhooks → Add endpoint* `https://<domain>/api/billing/webhook`, events

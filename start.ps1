@@ -10,6 +10,9 @@ if ((Has docker) -and ((docker info 2>$null) -ne $null)) {
 } else {
   if (-not (Has python)) { Write-Host "Installiere Python ..."; winget install -e --id Python.Python.3.13 --accept-package-agreements --accept-source-agreements; $env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [Environment]::GetEnvironmentVariable("Path","User") }
   if (-not (Has node))   { Write-Host "Installiere Node.js ..."; winget install -e --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements; $env:Path = [Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [Environment]::GetEnvironmentVariable("Path","User") }
+  $tess = "$env:ProgramFiles\Tesseract-OCR\tesseract.exe"
+  if (-not (Test-Path $tess)) { Write-Host "Installiere Tesseract (Texterkennung) ..."; winget install -e --id UB-Mannheim.TesseractOCR --accept-package-agreements --accept-source-agreements }
+  if (Test-Path $tess) { $env:TESSERACT_CMD = $tess }
   if (-not (Test-Path backend\.venv)) { python -m venv backend\.venv }
   & backend\.venv\Scripts\pip.exe install -q -r backend\requirements.txt
   $env:DEMO_MODE = "true"

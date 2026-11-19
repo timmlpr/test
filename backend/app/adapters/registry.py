@@ -6,10 +6,11 @@ from app.adapters.domain import DnsDoh, Rdap, Wayback, WebPassive
 from app.adapters.leaks import HibpEmail, PwnedPasswords, XposedOrNot
 from app.adapters.scam import SafeBrowsing, TinEye, UrlHaus
 from app.adapters.search import BraveSearch, GoogleCse, Wikipedia
+from app.adapters.sms import SevenSms
 
 ADAPTERS: dict[str, Adapter] = {a.meta.name: a for a in [
     XposedOrNot(), PwnedPasswords(), HibpEmail(), Wikipedia(), BraveSearch(), GoogleCse(), Rdap(), DnsDoh(), WebPassive(),
-    Wayback(), SafeBrowsing(), UrlHaus(), TinEye(), Demo(),
+    Wayback(), SafeBrowsing(), UrlHaus(), TinEye(), SevenSms(), Demo(),
 ]}
 
 # Tests can force offline behaviour.

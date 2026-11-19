@@ -16,7 +16,8 @@ Nothing here is required for the local demo. Items marked **launch** are needed 
 | Google Safe Browsing / Web Risk | scam check | Google Cloud Console | `SAFE_BROWSING_KEY` | free non-commercial | optional |
 | abuse.ch | URLhaus scam check | https://auth.abuse.ch | `URLHAUS_AUTH_KEY` | yes | optional |
 | Gemini / Claude | AI assistant | aistudio.google.com / console.anthropic.com | `GEMINI_API_KEY` / `ANTHROPIC_API_KEY`, `AI_MODE`, `AI_PROVIDER` | Gemini free tier | optional |
-| SMS provider | phone verification | e.g. seven.io, sms77 (EU) | `SMS_PROVIDER` (+ adapter to implement) | no | optional |
+| seven.io (SMS) | phone ownership codes | https://app.seven.io/signup | `SMS_PROVIDER=seven`, `SMS_API_KEY`, `SMS_SENDER` | no (pay per SMS) | optional |
+| Gmail API (same Google OAuth client) | subscription guard: mailbox connection | Google Cloud Console → enable Gmail API, add scope `gmail.metadata` | uses `GOOGLE_CLIENT_ID/SECRET` | yes, but restricted scope → Google app verification + security assessment before public launch | optional |
 | HIBP / TinEye | paid sources | haveibeenpwned.com / tineye.com | `HIBP_API_KEY`, `TINEYE_API_KEY` | no | optional |
 
 Owner decisions still open: legal entity & imprint data (`config/brand.json → operator`), small-business VAT switch

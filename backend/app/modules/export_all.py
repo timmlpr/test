@@ -43,11 +43,14 @@ def purge(db: Session, user: m.User) -> None:
         except OSError:
             pass
     uid = user.id
+    from app.modules.vault import revoke_mailbox
+
+    revoke_mailbox(db, uid)
     for t in USER_TABLES:
         db.execute(delete(t).where(t.user_id == uid))
     db.execute(delete(m.UserUsage).where(m.UserUsage.user_id == uid))
     db.execute(delete(m.AiUsage).where(m.AiUsage.user_id == uid))
-    for extra in (m.EstateVault, m.MonitorSettings):
+    for extra in (m.EstateVault, m.MonitorSettings, m.MailboxConnection):
         if (row := db.get(extra, uid)) is not None:
             db.delete(row)
     grp = db.scalar(select(m.FamilyGroup).where(m.FamilyGroup.owner_id == uid))

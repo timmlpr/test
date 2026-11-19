@@ -22,7 +22,7 @@ Datenschutzbeauftragte:r: [NAME/KONTAKT oder „nicht benannt, da nicht erforder
 | Sicherheit | Audit-Log ohne Klartext-Personendaten, Rate-Limits | Art. 6 Abs. 1 lit. f | 365 Tage |
 | Warteliste | E-Mail (Double-Opt-in) | Art. 6 Abs. 1 lit. a | bis Widerruf; unbestätigt 7 Tage |
 | Bild-Check | Bild nur im Arbeitsspeicher | Art. 6 Abs. 1 lit. b | keine Speicherung |
-| Abo-Wächter | Absender, Kategorie, Betrag, Abmelde-Link (keine Inhalte) | Art. 6 Abs. 1 lit. b | bis Löschung durch dich |
+| Abo-Wächter | Absender, Kategorie, Betrag, Abmelde-Link (keine Inhalte); bei Gmail-Verbindung zusätzlich verschlüsseltes Zugriffstoken | Art. 6 Abs. 1 lit. b, a | bis Löschung/Trennung durch dich |
 | Dokumenten-Scanner | erkannter Text, Fristen (verschlüsselt) | Art. 6 Abs. 1 lit. b | bis Löschung durch dich |
 | Digitaler Nachlass | nur verschlüsselter Inhalt (Schlüssel bei dir), E-Mail der Vertrauensperson | Art. 6 Abs. 1 lit. b | bis Löschung durch dich |
 | KI-Assistent (optional) | anonymisierter Text | Art. 6 Abs. 1 lit. a/b | Antwort-Cache 30 Tage |
@@ -41,6 +41,8 @@ Nur wenn aktiviert: Texte werden vor dem Versand anonymisiert (Namen, Adressen, 
 | [E-Mail-Versanddienst] | Transaktions-Mails | [EU] | AVV |
 | Google (Gemini API), optional | KI-Antworten (anonymisiert) | USA/EU | AVV/SCC – prüfen |
 | Anthropic (Claude API), optional | KI-Antworten (anonymisiert) | USA | AVV/SCC – prüfen |
+| seven communications GmbH & Co. KG (seven.io), optional | SMS-Code zur Bestätigung der eigenen Telefonnummer | Deutschland | AVV |
+| Google (Gmail API), nur bei Verbindung durch dich | Lesen von E-Mail-Kopfzeilen für den Abo-Wächter (kein Inhalt) | USA/EU | AVV/SCC, Widerruf jederzeit – prüfen |
 | Google Safe Browsing / abuse.ch, optional | Link-Prüfung (nur URL) | USA/Schweiz | Angemessenheitsbeschluss (CH) / SCC – prüfen |
 
 ## 7. Cookies

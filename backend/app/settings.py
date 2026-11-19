@@ -63,7 +63,12 @@ class Settings(BaseSettings):
     claude_model: str = "claude-haiku-5-5"
 
     # SMS provider adapter for phone verification (optional)
-    sms_provider: str = "none"
+    sms_provider: str = "none"  # none | seven
+    sms_api_key: str = ""
+    sms_sender: str = "Fadeprint"
+
+    # OCR (document scanner). Empty = tesseract from PATH.
+    tesseract_cmd: str = ""
 
     upload_dir: str = str(ROOT / "backend" / "uploads")
     upload_ttl_hours: int = 24

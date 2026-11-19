@@ -475,3 +475,16 @@ class OneTimeToken(Base, TimestampMixin):
     purpose: Mapped[str] = mapped_column(String(24))
     data: Mapped[str | None] = mapped_column(Text)
     expires_at: Mapped[datetime] = mapped_column(DateTime)
+
+
+class MailboxConnection(Base):
+    """Read-only mailbox link for the subscription guard (Gmail scope gmail.metadata: headers only, no bodies).
+    Only the encrypted refresh token is stored; disconnect revokes it at Google and deletes the row."""
+
+    __tablename__ = "mailbox_connections"
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    provider: Mapped[str] = mapped_column(String(16), default="gmail")
+    address: Mapped[str | None] = mapped_column(EncryptedText)
+    refresh_token: Mapped[str] = mapped_column(EncryptedText)
+    connected_at: Mapped[datetime] = mapped_column(DateTime, default=now)
+    last_sync: Mapped[datetime | None] = mapped_column(DateTime)

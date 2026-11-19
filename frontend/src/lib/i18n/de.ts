@@ -47,6 +47,9 @@ export const de: Record<string, V> = {
   "err.admin_requires_2fa": "Der Admin-Bereich braucht eine Anmeldung mit 2-Faktor-Code.",
   "err.invalid_voucher": "Dieser Gutschein ist ungültig oder aufgebraucht.",
   "err.dns_txt_not_found": "Der DNS-Eintrag wurde noch nicht gefunden. Das kann bis zu einer Stunde dauern.",
+  "err.sms_unavailable": "Die SMS konnte gerade nicht gesendet werden. Bitte versuch es später noch einmal.",
+  "err.mailbox_unavailable": "Das Postfach ist gerade nicht erreichbar. Bitte später erneut versuchen.",
+  "err.mailbox_reconnect_required": "Der Zugriff auf dein Postfach ist abgelaufen. Bitte verbinde es neu.",
   "err.ai_daily_limit": "Das Tageslimit für den KI-Assistenten ist erreicht.",
 
   // ---- nav
@@ -223,7 +226,11 @@ export const de: Record<string, V> = {
   "subs.title": "Abo-Wächter", "subs.explain": "Lade einen Mail-Export hoch (.mbox, .eml oder .zip). Wir speichern nur Absender, Kategorie, Betrag und Abmelde-Link – keine Inhalte.",
   "subs.upload": "Mail-Export hochladen", "subs.monthly": "Abos pro Monat", "subs.newsletter": "Newsletter", "subs.subscription": "Abos", "subs.account": "Konten",
   "subs.unsubscribe": "Abmelden", "subs.deleteAccount": "Löschung beantragen", "subs.howto": "So exportierst du deine Mails",
-  "subs.oauth": "Direkte Postfach-Verbindung (nur Lesen) folgt, sobald die OAuth-Prüfung von Google/Microsoft abgeschlossen ist.",
+  "subs.oauth": "Die direkte Gmail-Verbindung ist auf diesem Server noch nicht eingerichtet. Der Mail-Export funktioniert immer.",
+  "subs.mailboxTitle": "Oder: Gmail direkt verbinden (nur Lesen)",
+  "subs.mailboxHint": "Fadeprint liest nur Kopfzeilen (Absender, Betreff, Datum, Abmelde-Link) – keine Inhalte, keine Anhänge. Du kannst die Verbindung jederzeit trennen; dann widerrufen wir den Zugriff sofort bei Google.",
+  "subs.mailboxConnect": "Gmail verbinden", "subs.mailboxConnected": "Postfach verbunden und analysiert.", "subs.mailboxSync": "Jetzt abgleichen",
+  "subs.mailboxDisconnect": "Verbindung trennen", "subs.mailboxLast": "Zuletzt abgeglichen",
   "docs.title": "Dokumenten-Scanner", "docs.explain": "Lade Verträge oder Briefe hoch. Wir erkennen Fristen und sensible Daten und erinnern dich rechtzeitig. Verschlüsselt gespeichert.",
   "docs.upload": "Dokument hochladen (PDF, Foto, TXT)", "docs.deadlines": "Erkannte Fristen", "docs.sensitive": "Sensible Daten", "docs.reminders": "Erinnerungen",
   "estate.title": "Digitaler Nachlass", "estate.explain": "Notiere deine Konten und Notfall-Infos. Alles wird in deinem Browser mit deinem Kennwort verschlüsselt – wir können es nicht lesen.",

@@ -101,24 +101,16 @@ def _body_text(msg) -> str:
         return ""
 
 
-@router.post("/subs/upload")
-async def subs_upload(file: UploadFile = File(...), user: User = Depends(require_feature("subscription_guard")),
-                      db: Session = Depends(get_db)):
-    """Accepts .mbox / .eml / .zip mail export. Only metadata (sender, category, amount, unsubscribe link) is stored;
-    message bodies are parsed in memory and discarded."""
-    data = await file.read()
-    if len(data) > MAX_UPLOAD:
-        raise ApiError(413, "file_too_large")
+def _store_messages(db: Session, user: User, messages, label: str) -> tuple[int, int]:
+    """Aggregate (headers, body) pairs per sender+category and replace the user's stored list. Bodies are discarded."""
     agg: dict[str, dict] = defaultdict(lambda: {"count": 0})
     scanned = 0
-    for msg in _iter_messages(data, file.filename or "export.mbox"):
+    for headers, body in messages:
         scanned += 1
-        headers = {k.lower(): str(v) for k, v in msg.items() if k.lower() in ("from", "subject", "list-unsubscribe", "date")}
-        c = classify_message(headers, _body_text(msg))
+        c = classify_message(headers, body)
         if not c:
             continue
-        key = f"{c['domain']}|{c['category']}"
-        a = agg[key]
+        a = agg[f"{c['domain']}|{c['category']}"]
         a.update({k: v for k, v in c.items() if v is not None or k not in a})
         a["count"] += 1
         try:
@@ -131,9 +123,23 @@ async def subs_upload(file: UploadFile = File(...), user: User = Depends(require
         db.add(MailSubscription(user_id=user.id, sender=a["sender"], sender_domain=a["domain"], category=a["category"],
                                 amount=a.get("amount"), interval=a.get("interval"), unsubscribe=a.get("unsubscribe"),
                                 last_seen=a.get("last"), message_count=a["count"]))
-    timeline(db, user.id, "change", f"Mail-Export analysiert: {len(agg)} Absender erkannt")
+    timeline(db, user.id, "change", f"{label} analysiert: {len(agg)} Absender erkannt")
     db.commit()
-    return {"scanned": scanned, "found": len(agg)}
+    return scanned, len(agg)
+
+
+@router.post("/subs/upload")
+async def subs_upload(file: UploadFile = File(...), user: User = Depends(require_feature("subscription_guard")),
+                      db: Session = Depends(get_db)):
+    """Accepts .mbox / .eml / .zip mail export. Only metadata (sender, category, amount, unsubscribe link) is stored;
+    message bodies are parsed in memory and discarded."""
+    data = await file.read()
+    if len(data) > MAX_UPLOAD:
+        raise ApiError(413, "file_too_large")
+    scanned, found = _store_messages(db, user, ((
+        {k.lower(): str(v) for k, v in msg.items() if k.lower() in ("from", "subject", "list-unsubscribe", "date")}, _body_text(msg))
+        for msg in _iter_messages(data, file.filename or "export.mbox")), "Mail-Export")
+    return {"scanned": scanned, "found": found}
 
 
 @router.get("/subs")
@@ -144,7 +150,7 @@ def subs_list(user: User = Depends(require_feature("subscription_guard")), db: S
                        "interval": r.interval, "unsubscribe": r.unsubscribe, "last_seen": r.last_seen, "count": r.message_count}
                       for r in sorted(rows, key=lambda r: (r.category, r.sender_domain))],
             "monthly_cost": round(monthly, 2), "counts": {c: sum(r.category == c for r in rows) for c in ("newsletter", "subscription", "account")},
-            "mailbox_oauth": {"available": False, "reason": "needs_google_or_microsoft_oauth_app_review"}}
+            "mailbox": _mailbox_status(db, user)}
 
 
 @router.get("/subs/xlsx")
@@ -165,6 +171,173 @@ def subs_xlsx(user: User = Depends(require_feature("subscription_guard")), db: S
 @router.delete("/subs")
 def subs_clear(user: User = Depends(require_feature("subscription_guard")), db: Session = Depends(get_db)):
     db.execute(delete(MailSubscription).where(MailSubscription.user_id == user.id))
+    db.commit()
+    return {"ok": True}
+
+
+# ------------------------------------------------------------------ M-12 mailbox connection (Gmail, read-only metadata)
+GMAIL_SCOPE = "https://www.googleapis.com/auth/gmail.metadata"
+GMAIL_API = "https://gmail.googleapis.com/gmail/v1/users/me"
+MAX_SYNC = 500
+
+
+def _mailbox_available() -> bool:
+    s = get_settings()
+    return bool(s.google_client_id and s.google_client_secret)
+
+
+def _mailbox_status(db: Session, user: User) -> dict:
+    from app.models import MailboxConnection
+
+    c = db.get(MailboxConnection, user.id)
+    return {"available": _mailbox_available(), "connected": bool(c), "address": c.address if c else None,
+            "last_sync": c.last_sync if c else None, "scope": "gmail.metadata"}
+
+
+def _redirect_uri() -> str:
+    return f"{get_settings().public_url}/api/subs/mailbox/callback"
+
+
+@router.get("/subs/mailbox/start")
+def mailbox_start(user: User = Depends(require_feature("subscription_guard")), db: Session = Depends(get_db)):
+    """Redirect to Google consent: scope gmail.metadata only (headers, labels – no message bodies, no attachments)."""
+    from urllib.parse import urlencode
+
+    from fastapi.responses import RedirectResponse
+
+    from app.core.security import token_hash
+    from app.models import OneTimeToken
+
+    if not _mailbox_available():
+        raise ApiError(503, "mailbox_unavailable")
+    state = secrets.token_urlsafe(24)
+    db.add(OneTimeToken(token_hash=token_hash(state), user_id=user.id, purpose="mailbox_oauth", expires_at=now() + timedelta(minutes=10)))
+    db.commit()
+    params = {"client_id": get_settings().google_client_id, "redirect_uri": _redirect_uri(), "response_type": "code",
+              "scope": f"openid email {GMAIL_SCOPE}", "access_type": "offline", "prompt": "consent", "state": state,
+              "include_granted_scopes": "false"}
+    return RedirectResponse(f"https://accounts.google.com/o/oauth2/v2/auth?{urlencode(params)}")
+
+
+def _access_token(refresh_token: str) -> str:
+    import httpx
+
+    s = get_settings()
+    r = httpx.post("https://oauth2.googleapis.com/token", data={"client_id": s.google_client_id, "client_secret": s.google_client_secret,
+                                                                "refresh_token": refresh_token, "grant_type": "refresh_token"}, timeout=15)
+    if r.status_code != 200:
+        raise ApiError(400, "mailbox_reconnect_required")
+    return r.json()["access_token"]
+
+
+def _fetch_headers(access_token: str, limit: int = MAX_SYNC):
+    """Yield (headers, '') for the newest messages. format=metadata never returns bodies."""
+    import httpx
+
+    h = {"Authorization": f"Bearer {access_token}"}
+    with httpx.Client(timeout=20, headers=h) as c:
+        ids, page = [], None
+        while len(ids) < limit:
+            params = {"maxResults": min(100, limit - len(ids))}
+            if page:
+                params["pageToken"] = page
+            r = c.get(f"{GMAIL_API}/messages", params=params)
+            if r.status_code != 200:
+                raise ApiError(503, "mailbox_unavailable")
+            j = r.json()
+            ids += [m["id"] for m in j.get("messages", [])]
+            page = j.get("nextPageToken")
+            if not page:
+                break
+        for mid in ids:
+            r = c.get(f"{GMAIL_API}/messages/{mid}", params=[("format", "metadata"), ("metadataHeaders", "From"),
+                                                              ("metadataHeaders", "Subject"), ("metadataHeaders", "List-Unsubscribe"),
+                                                              ("metadataHeaders", "Date")])
+            if r.status_code != 200:
+                continue
+            hdrs = {x["name"].lower(): x["value"] for x in r.json().get("payload", {}).get("headers", [])}
+            yield hdrs, ""
+
+
+def mailbox_sync(db: Session, user: User) -> dict:
+    from app.models import MailboxConnection
+
+    conn = db.get(MailboxConnection, user.id)
+    if not conn:
+        raise ApiError(404, "mailbox_not_connected")
+    scanned, found = _store_messages(db, user, _fetch_headers(_access_token(conn.refresh_token)), "Postfach")
+    conn.last_sync = now()
+    db.commit()
+    return {"scanned": scanned, "found": found}
+
+
+@router.get("/subs/mailbox/callback")
+def mailbox_callback(code: str, state: str, user: User = Depends(require_feature("subscription_guard")), db: Session = Depends(get_db)):
+    import httpx
+    import jwt as pyjwt
+    from fastapi.responses import RedirectResponse
+
+    from app.core.security import token_hash
+    from app.models import ConsentLog, MailboxConnection, OneTimeToken
+
+    row = db.get(OneTimeToken, token_hash(state))
+    if not row or row.purpose != "mailbox_oauth" or row.user_id != user.id or row.expires_at < now():
+        raise ApiError(400, "invalid_or_expired_token")
+    db.delete(row)
+    s = get_settings()
+    r = httpx.post("https://oauth2.googleapis.com/token", data={"code": code, "client_id": s.google_client_id,
+                                                                "client_secret": s.google_client_secret, "redirect_uri": _redirect_uri(),
+                                                                "grant_type": "authorization_code"}, timeout=15)
+    if r.status_code != 200 or "refresh_token" not in r.json():
+        raise ApiError(400, "oauth_failed")
+    tok = r.json()
+    if GMAIL_SCOPE not in tok.get("scope", ""):
+        raise ApiError(400, "mailbox_scope_missing")
+    # id_token received directly from Google’s token endpoint over TLS (OIDC Core 3.1.3.7 allows TLS server validation);
+    # it is only used to display the connected address.
+    address = pyjwt.decode(tok["id_token"], options={"verify_signature": False}).get("email") if tok.get("id_token") else None
+    conn = db.get(MailboxConnection, user.id) or MailboxConnection(user_id=user.id, refresh_token="")
+    conn.refresh_token, conn.address, conn.connected_at = tok["refresh_token"], address, now()
+    db.merge(conn)
+    db.add(ConsentLog(user_id=user.id, kind="mailbox", granted=True))
+    audit(db, "mailbox.connected", user.id)
+    db.commit()
+    try:
+        mailbox_sync(db, user)
+    except ApiError:
+        pass  # connection stays; user can retry sync
+    return RedirectResponse(f"{s.public_url}/app/subscriptions?mailbox=connected", status_code=303)
+
+
+@router.post("/subs/mailbox/sync")
+def mailbox_sync_route(user: User = Depends(require_feature("subscription_guard")), db: Session = Depends(get_db)):
+    from app.core import ratelimit
+
+    ratelimit.hit(f"mailsync:{user.id}", 5, 3600)
+    return mailbox_sync(db, user)
+
+
+def revoke_mailbox(db: Session, user_id: str) -> None:
+    """Revoke at Google (best effort) and delete the stored token."""
+    import httpx
+
+    from app.models import ConsentLog, MailboxConnection
+
+    conn = db.get(MailboxConnection, user_id)
+    if not conn:
+        return
+    try:
+        httpx.post("https://oauth2.googleapis.com/revoke", params={"token": conn.refresh_token}, timeout=10)
+    except httpx.HTTPError:
+        pass
+    db.delete(conn)
+    db.add(ConsentLog(user_id=user_id, kind="mailbox", granted=False))
+
+
+@router.delete("/subs/mailbox")
+def mailbox_disconnect(user: User = Depends(require_feature("subscription_guard")), db: Session = Depends(get_db)):
+    revoke_mailbox(db, user.id)
+    audit(db, "mailbox.disconnected", user.id)
     db.commit()
     return {"ok": True}
 
@@ -212,8 +385,11 @@ def _ocr(data: bytes, filename: str) -> str:
     if name.endswith(".txt"):
         return data.decode("utf-8", "replace")
     try:
-        import pytesseract  # optional; installed in Docker image
+        import pytesseract  # tesseract binary: Docker image, start.sh/start.ps1 install it, or TESSERACT_CMD
         from PIL import Image
+
+        if get_settings().tesseract_cmd:
+            pytesseract.pytesseract.tesseract_cmd = get_settings().tesseract_cmd
 
         return pytesseract.image_to_string(Image.open(io.BytesIO(data)), lang="deu+eng")
     except Exception as e:  # noqa: BLE001

@@ -153,7 +153,17 @@ def _send_phone_code(db: Session, user: User, ident: Identifier) -> dict:
 
         OUTBOX.append({"to": "sms", "subject": "SMS-Code", "text": f"Dein Fadeprint-Code: {code}"})
         return {"pending_reason": "enter_code", "dev_hint": "Code liegt im Dev-Postfach (kein SMS-Anbieter konfiguriert)."}
-    raise ApiError(501, "sms_provider_not_implemented")
+    from app.adapters.base import SourceUnavailable
+    from app.adapters.sms import sms_provider
+
+    prov = sms_provider()
+    if prov is None:
+        raise ApiError(503, "sms_unavailable")
+    try:
+        prov.send(ident.value, f"Dein {brand()['name']}-Code: {code} (10 Minuten gültig). Nicht angefordert? Ignorieren.")
+    except SourceUnavailable as e:
+        raise ApiError(503, "sms_unavailable", source=e.source) from e
+    return {"pending_reason": "enter_code"}
 
 
 class VerifyIn(BaseModel):
