@@ -11,3 +11,6 @@ frontend/test-results/
 frontend/playwright-report/
 .env
 *.db
+frontend/tsconfig.tsbuildinfo
+frontend/next-env.d.ts
+deploy/backups/

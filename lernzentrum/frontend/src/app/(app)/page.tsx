@@ -78,7 +78,7 @@ export default function HomePage() {
             <ul className="divide-y divide-border">
               {data.today.map((e) => (
                 <li key={e.id} className="flex items-center gap-3 py-3">
-                  <div className="w-24 shrink-0 text-sm tabular-nums text-muted">{fmtTime(e.start)}–{fmtTime(e.end)}</div>
+                  <div className="w-16 shrink-0 text-xs tabular-nums text-muted sm:w-24 sm:text-sm">{fmtTime(e.start)}–{fmtTime(e.end)}</div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <ModuleChip short={e.module} color={e.color} />

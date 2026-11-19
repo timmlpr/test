@@ -1,0 +1,9 @@
+**/node_modules
+**/.next
+**/.venv
+**/__pycache__
+backend/data
+**/*.db
+.git
+
+frontend/e2e-shots

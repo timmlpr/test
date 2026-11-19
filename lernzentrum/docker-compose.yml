@@ -1,0 +1,31 @@
+# Local full stack: PostgreSQL + API + web. Demo mode on, no keys needed.
+#   docker compose up --build   →  http://localhost:3000
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: lz
+      POSTGRES_PASSWORD: lz-local-only
+      POSTGRES_DB: lernzentrum
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lz -d lernzentrum"]
+      interval: 5s
+      retries: 20
+  backend:
+    build: { context: ., dockerfile: backend/Dockerfile }
+    environment:
+      LZ_ENV: development
+      LZ_DATABASE_URL: postgresql+psycopg://lz:lz-local-only@db:5432/lernzentrum
+      LZ_DEMO_MODE: "true"
+      LZ_PUBLIC_URL: http://localhost:3000
+    volumes: [lzdata:/data]
+    depends_on:
+      db: { condition: service_healthy }
+  frontend:
+    build: { context: ., dockerfile: frontend/Dockerfile, args: { API_URL: "http://backend:8000" } }
+    ports: ["3000:3000"]
+    depends_on: [backend]
+volumes:
+  pgdata:
+  lzdata:

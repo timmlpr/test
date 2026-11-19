@@ -128,3 +128,8 @@ a,
 .flash {
   animation: flash-in 1.6s ease-out;
 }
+
+/* grid/flex children must be allowed to shrink below their content (truncated titles on iPhone) */
+.grid > * {
+  min-width: 0;
+}

@@ -221,6 +221,16 @@ def from_blob(blob: bytes | None) -> np.ndarray | None:
     return None if blob is None else np.frombuffer(blob, dtype=np.float32)
 
 
+def surface_words(text: str, stems: list[str]) -> list[str]:
+    """Map stemmed tokens back to readable words as they appear in `text`."""
+    found: dict[str, str] = {}
+    for w in re.findall(r"[A-Za-zÄÖÜäöüß][A-Za-zÄÖÜäöüß-]+", text):
+        st = tokens(w)
+        if st and st[0] in stems and st[0] not in found:
+            found[st[0]] = w
+    return [found.get(s, s) for s in stems]
+
+
 def short(text: str, n: int = 160) -> str:
     text = " ".join(text.split())
     return text if len(text) <= n else text[: n - 1].rsplit(" ", 1)[0] + "…"

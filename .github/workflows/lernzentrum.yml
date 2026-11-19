@@ -1,0 +1,67 @@
+name: Lernzentrum CI/CD
+on:
+  push:
+    paths: ["lernzentrum/**", ".github/workflows/lernzentrum.yml"]
+  pull_request:
+    paths: ["lernzentrum/**"]
+  workflow_dispatch:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env: { POSTGRES_USER: lz, POSTGRES_PASSWORD: lz, POSTGRES_DB: lztest }
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U lz" --health-interval 5s --health-retries 10
+    defaults: { run: { working-directory: lernzentrum/backend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check app tests
+      - name: Tests (SQLite)
+        run: python -m pytest tests -q
+      - name: Tests (PostgreSQL)
+        run: python -m pytest tests -q
+        env: { LZ_TEST_DATABASE_URL: "postgresql+psycopg://lz:lz@localhost:5432/lztest" }
+      - name: Migrations match models
+        run: alembic upgrade head && alembic check
+        env: { LZ_DATABASE_URL: "postgresql+psycopg://lz:lz@localhost:5432/lztest", LZ_DATA_DIR: /tmp/lz }
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: lernzentrum/frontend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: lernzentrum/frontend/package-lock.json }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose -f lernzentrum/docker-compose.yml build
+
+  deploy:
+    # Runs only on main and only when the server secrets exist (Settings → Secrets: DEPLOY_HOST, DEPLOY_SSH_KEY)
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [docker]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Hetzner via SSH
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          if [ -z "$HOST" ] || [ -z "$KEY" ]; then echo "No deploy secrets configured – skipping"; exit 0; fi
+          install -m 600 /dev/null key && echo "$KEY" > key
+          ssh -i key -o StrictHostKeyChecking=accept-new root@"$HOST" \
+            'cd /opt/lernzentrum && git pull --ff-only && cd lernzentrum && docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env up -d --build && sleep 20 && curl -fs http://localhost/api/health -H "Host: $(grep LZ_DOMAIN deploy/.env | cut -d= -f2)" || true'

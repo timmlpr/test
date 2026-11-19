@@ -17,7 +17,7 @@ from ..live.analyzers import quantities
 from ..models import Answer, Chunk, Deadline, Document, Flashcard, KeyMoment, LearnItem, MockExam, Module, \
     Recording, StudySession, TranscriptSegment, User
 from ..providers import registry
-from ..text import content_overlap, find_statutes, sentences, short, tokens
+from ..text import content_overlap, find_statutes, sentences, short, surface_words, tokens
 
 DEF_PATTERNS = [
     re.compile(r"^(?:Unter (?:einem |einer |dem |der )?)(?P<term>[A-ZÄÖÜ][\wäöüß\- ]{2,40}?) versteht man (?P<def>.+)$"),
@@ -277,8 +277,9 @@ def gap_finder(db: Session, module_id: int) -> list[dict]:
             continue
         covered = len([t for t in toks if t in transcript_toks]) / len(toks)
         if covered < 0.3:
+            missing = sorted((t for t in toks if t not in transcript_toks), key=lambda t: c.text.lower().find(t[:4]))
             gaps.append({"source": _src(c, d), "coverage": round(covered, 2), "excerpt": short(c.text, 200),
-                         "missing": [t for t in toks if t not in transcript_toks][:6]})
+                         "missing": surface_words(c.text, missing[:6])})
     return sorted(gaps, key=lambda g: g["coverage"])[:20]
 
 

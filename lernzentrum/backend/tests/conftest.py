@@ -3,7 +3,9 @@ import os
 import tempfile
 
 _tmp = tempfile.mkdtemp(prefix="lz-test-")
-os.environ.update({"LZ_ENV": "test", "LZ_DATA_DIR": _tmp, "LZ_DATABASE_URL": f"sqlite:///{_tmp}/test.db",
+# LZ_TEST_DATABASE_URL lets CI run the same suite against PostgreSQL
+os.environ.update({"LZ_ENV": "test", "LZ_DATA_DIR": _tmp,
+                   "LZ_DATABASE_URL": os.environ.get("LZ_TEST_DATABASE_URL", f"sqlite:///{_tmp}/test.db"),
                    "LZ_RUN_JOBS": "false", "LZ_DEMO_MODE": "false"})
 
 import pytest  # noqa: E402
