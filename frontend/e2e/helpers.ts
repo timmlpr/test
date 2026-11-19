@@ -11,7 +11,7 @@ export async function loginDemo(page: Page, email = "demo@demo.example.com") {
   }
   await page.goto("/login");
   await page.getByLabel("E-Mail-Adresse").fill(email);
-  await page.getByLabel("Passwort", { exact: true }).fill("FadeprintDemo1!");
+  await page.getByLabel("Passwort", { exact: true }).fill("TracelowDemo1!");
   await page.getByRole("button", { name: "Anmelden", exact: true }).click();
   await expect(page).toHaveURL(/\/app$/);
   await page.evaluate(() => localStorage.setItem("fp_cookie", "necessary"));

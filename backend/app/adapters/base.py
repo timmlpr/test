@@ -14,7 +14,7 @@ from threading import Lock
 
 import httpx
 
-USER_AGENT = "FadeprintBot/1.0 (+privacy self-check; contact via site imprint)"
+USER_AGENT = "TracelowBot/1.0 (+privacy self-check; contact via site imprint)"
 
 
 class SourceUnavailable(Exception):

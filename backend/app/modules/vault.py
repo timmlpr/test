@@ -472,7 +472,7 @@ def estate_put(body: EstateIn, user: User = Depends(require_feature("digital_est
         v.unlock_token = secrets.token_urlsafe(24) if body.trusted_email else None
         if body.trusted_email:
             send_mail(body.trusted_email, "Du wurdest als Vertrauensperson benannt",
-                      "Eine Person hat dich bei Fadeprint als Vertrauensperson für ihren digitalen Nachlass benannt.\n"
+                      "Eine Person hat dich bei Tracelow als Vertrauensperson für ihren digitalen Nachlass benannt.\n"
                       "Im Ernstfall kannst du hier die Freigabe anfragen. Die Person wird informiert und kann widersprechen:\n"
                       f"{get_settings().public_url}/estate/request?token={v.unlock_token}\n\n"
                       "Zum Entschlüsseln brauchst du zusätzlich das Kennwort, das dir die Person persönlich gegeben hat.")

@@ -19,7 +19,7 @@ Foren, Shops und Apps, die du nicht mehr nutzt, speichern oft noch Daten. Notier
 ## 4. Mach eine Liste – und fang mit dem Wichtigsten an
 Adresse, Telefonnummer und Geburtsdatum sind sensibler als ein Benutzername. Fang dort an.
 
-> Tipp: Fadeprint erledigt die Schritte 1 bis 4 für deine bestätigten Angaben und sortiert die Funde nach Wirkung.`,
+> Tipp: Tracelow erledigt die Schritte 1 bis 4 für deine bestätigten Angaben und sortiert die Funde nach Wirkung.`,
     sources: ["https://haveibeenpwned.com/", "https://xposedornot.com/", "https://www.bfdi.bund.de/"],
   },
   {
@@ -148,7 +148,7 @@ Wenn du Fotos von zu Hause öffentlich teilst oder per E-Mail verschickst. Viele
 - **Android**: In der Kamera-App die Standort-Speicherung deaktivieren.
 - **Windows**: Rechtsklick → Eigenschaften → Details → „Eigenschaften und persönliche Informationen entfernen“.
 
-Oder nutze den Bild-Check in Fadeprint: Er zeigt die Metadaten und entfernt sie mit einem Klick.`,
+Oder nutze den Bild-Check in Tracelow: Er zeigt die Metadaten und entfernt sie mit einem Klick.`,
     sources: ["https://support.apple.com/de-de/guide/iphone/iph3d110f84/ios"],
   },
   {
@@ -182,7 +182,7 @@ Sprecht über Einstellungen wie private Profile oder Standortfreigabe. Heimliche
 
 ## Gute Startpunkte
 - Klicksafe (EU-Initiative) mit Ratgebern für Eltern
-- Die Sicherheits-Checkliste in Fadeprint, die ihr gemeinsam durchgeht`,
+- Die Sicherheits-Checkliste in Tracelow, die ihr gemeinsam durchgeht`,
     sources: ["https://www.klicksafe.de/", "https://eur-lex.europa.eu/eli/reg/2016/679/oj"],
   },
 ];

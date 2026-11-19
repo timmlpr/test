@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     env: str = "development"  # development | production | test
     demo_mode: bool = True
-    database_url: str = f"sqlite:///{ROOT / 'backend' / 'fadeprint.db'}"
+    database_url: str = f"sqlite:///{ROOT / 'backend' / 'tracelow.db'}"
     public_url: str = "http://localhost:3000"
 
     # Crypto: 32-byte keys, base64 or hex. Dev defaults are generated & persisted on first start.
@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     smtp_port: int = 587
     smtp_user: str = ""
     smtp_password: str = ""
-    smtp_from: str = "Fadeprint <no-reply@fadeprint.example>"
+    smtp_from: str = "Tracelow <no-reply@tracelow.example>"
 
     # OAuth / OIDC
     google_client_id: str = ""
@@ -43,7 +43,7 @@ class Settings(BaseSettings):
 
     # WebAuthn
     webauthn_rp_id: str = "localhost"
-    webauthn_rp_name: str = "Fadeprint"
+    webauthn_rp_name: str = "Tracelow"
 
     # Stripe
     stripe_secret_key: str = ""
@@ -65,7 +65,7 @@ class Settings(BaseSettings):
     # SMS provider adapter for phone verification (optional)
     sms_provider: str = "none"  # none | seven
     sms_api_key: str = ""
-    sms_sender: str = "Fadeprint"
+    sms_sender: str = "Tracelow"
 
     # OCR (document scanner). Empty = tesseract from PATH.
     tesseract_cmd: str = ""

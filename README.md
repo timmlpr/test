@@ -1,4 +1,4 @@
-# Fadeprint – „Mach deinen digitalen Fußabdruck kleiner.“
+# Tracelow – „Mach deinen digitalen Fußabdruck kleiner.“
 
 German-language, GDPR-first web app (PWA) that shows people where **their own** data can be found online, how exposed they
 are, and guides them step by step to reduce it. Brand, tagline, prices and plan limits live only in
@@ -16,9 +16,9 @@ Demo mode is on by default (no keys needed). Demo accounts:
 
 | Account | Password | What you see |
 |---|---|---|
-| `demo@demo.example.com` | `FadeprintDemo1!` | Premium, full sample data |
-| `free@demo.example.com` | `FadeprintDemo1!` | Free plan, plan gating, demo checkout |
-| `admin@demo.example.com` | `FadeprintAdmin1!` | Admin (TOTP secret `FADEPRINTDEMOADMINTOTPKEYABCDEF2` – dev only) |
+| `demo@demo.example.com` | `TracelowDemo1!` | Premium, full sample data |
+| `free@demo.example.com` | `TracelowDemo1!` | Free plan, plan gating, demo checkout |
+| `admin@demo.example.com` | `TracelowAdmin1!` | Admin (TOTP secret `TRACELOWDEMOADMINTOTPKEYABCDEFG2` – dev only) |
 
 Mails are not sent without SMTP; they appear in the dev outbox at `/api/dev/outbox` (development only).
 

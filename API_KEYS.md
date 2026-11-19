@@ -8,7 +8,7 @@ Enter keys either in `.env` or in the app: **Admin → Schlüssel & Quoten** (st
 ### Brave Search API – deep scan (findability on the web)
 1. https://api-dashboard.search.brave.com/register → sign up.
 2. Choose the **Search** plan; Brave grants **$5 credit per month** (≈1,000 requests). A card is required (checked 2026-11).
-3. *API Keys* → *Add API key* → copy. `.env`: `BRAVE_API_KEY=...`. Fadeprint caps usage at 30 requests/day.
+3. *API Keys* → *Add API key* → copy. `.env`: `BRAVE_API_KEY=...`. Tracelow caps usage at 30 requests/day.
 
 ### Google Safe Browsing – scam check
 1. https://console.cloud.google.com → create project → *APIs & Services* → enable **Safe Browsing API**.
@@ -23,7 +23,7 @@ Enter keys either in `.env` or in the app: **Admin → Schlüssel & Quoten** (st
 ### Google Gemini – AI assistant (free tier)
 1. https://aistudio.google.com → *Get API key* → create.
 2. `.env`: `AI_MODE=both`, `AI_PROVIDER=gemini`, `GEMINI_API_KEY=...`
-3. Free tier inputs may be used to improve Google products → Fadeprint anonymises all text and shows a notice. Use a paid
+3. Free tier inputs may be used to improve Google products → Tracelow anonymises all text and shows a notice. Use a paid
    tier for the planned "privacy guarantee" plan.
 
 ### Web Push (VAPID) – push notifications (no account)
@@ -31,7 +31,7 @@ Enter keys either in `.env` or in the app: **Admin → Schlüssel & Quoten** (st
 
 ### seven.io – SMS codes for phone verification
 1. https://app.seven.io/signup → top up credit (pay per SMS, EU provider).
-2. *Developer → API keys* → create. `.env`: `SMS_PROVIDER=seven`, `SMS_API_KEY=...`, optional `SMS_SENDER=Fadeprint` (max. 11 characters).
+2. *Developer → API keys* → create. `.env`: `SMS_PROVIDER=seven`, `SMS_API_KEY=...`, optional `SMS_SENDER=Tracelow` (max. 11 characters).
 Without it, phone codes appear only in the dev outbox (demo/dev); in production phone verification is shown as unavailable.
 
 ### Gmail connection – subscription guard (read-only)
@@ -39,7 +39,7 @@ Uses the Google OAuth client from "Google sign-in" below. Additionally: *APIs & 
 *OAuth consent screen → Scopes → add* `https://www.googleapis.com/auth/gmail.metadata`; authorised redirect URI
 `https://<domain>/api/subs/mailbox/callback`. `gmail.metadata` is a **restricted scope**: up to 100 test users work
 immediately; a public launch needs Google's app verification incl. a third-party security assessment (CASA) – plan weeks.
-Fadeprint reads headers only, stores the refresh token encrypted, and revokes it on disconnect or account deletion.
+Tracelow reads headers only, stores the refresh token encrypted, and revokes it on disconnect or account deletion.
 
 ## Accounts needed for login / payments
 * **Stripe** (test mode free): https://dashboard.stripe.com/register → *Developers → API keys* → `STRIPE_SECRET_KEY=sk_test_...`.

@@ -50,8 +50,8 @@ export default function Reports() {
                 <li key={r.id} className="flex flex-wrap items-center gap-2 py-2 text-sm">
                   <span className="font-medium">{t("rep.version")} {r.version}</span><span className="text-muted-foreground">{fmtDate(r.created_at, true)} · {r.summary.score}/100 · {r.summary.total} Funde</span>
                   <span className="ml-auto flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => download(`/reports/${r.id}/pdf`, `fadeprint-report-v${r.version}.pdf`)}><FileDown className="h-4 w-4" />PDF</Button>
-                    <Button size="sm" variant="outline" onClick={() => download(`/reports/${r.id}/xlsx`, `fadeprint-report-v${r.version}.xlsx`)}><FileSpreadsheet className="h-4 w-4" />Excel</Button>
+                    <Button size="sm" variant="outline" onClick={() => download(`/reports/${r.id}/pdf`, `tracelow-report-v${r.version}.pdf`)}><FileDown className="h-4 w-4" />PDF</Button>
+                    <Button size="sm" variant="outline" onClick={() => download(`/reports/${r.id}/xlsx`, `tracelow-report-v${r.version}.xlsx`)}><FileSpreadsheet className="h-4 w-4" />Excel</Button>
                   </span>
                 </li>
               ))}

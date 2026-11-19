@@ -38,7 +38,7 @@ export default function Assistant() {
   });
   const speak = (text: string) => { if (!("speechSynthesis" in window)) return; const u = new SpeechSynthesisUtterance(text); u.lang = "de-DE"; speechSynthesis.cancel(); speechSynthesis.speak(u); };
 
-  /** Microphone only after explicit consent. Audio is processed by the browser's speech service; Fadeprint stores no audio. */
+  /** Microphone only after explicit consent. Audio is processed by the browser's speech service; Tracelow stores no audio. */
   const startMic = async () => {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SR) return;

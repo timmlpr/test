@@ -1,8 +1,8 @@
 """Demo seed (DEMO_MODE only). Creates clearly marked sample accounts and data so every screen is clickable.
 
-  demo@demo.example.com   / FadeprintDemo1!   – premium (demo subscription), full sample data
-  free@demo.example.com   / FadeprintDemo1!   – free plan, to see plan gating
-  admin@demo.example.com  / FadeprintAdmin1!  – admin, TOTP secret DEMO_ADMIN_TOTP (dev only!)
+  demo@demo.example.com   / TracelowDemo1!   – premium (demo subscription), full sample data
+  free@demo.example.com   / TracelowDemo1!   – free plan, to see plan gating
+  admin@demo.example.com  / TracelowAdmin1!  – admin, TOTP secret DEMO_ADMIN_TOTP (dev only!)
 """
 from __future__ import annotations
 
@@ -33,9 +33,9 @@ from app.models import (
     now,
 )
 
-DEMO_PASSWORD = "FadeprintDemo1!"
-ADMIN_PASSWORD = "FadeprintAdmin1!"
-DEMO_ADMIN_TOTP = "FADEPRINTDEMOADMINTOTPKEYABCDEF2"
+DEMO_PASSWORD = "TracelowDemo1!"
+ADMIN_PASSWORD = "TracelowAdmin1!"
+DEMO_ADMIN_TOTP = "TRACELOWDEMOADMINTOTPKEYABCDEFG2"
 
 
 def _user(db, email: str, pw: str, name: str, **kw) -> User:

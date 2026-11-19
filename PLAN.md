@@ -1,6 +1,6 @@
-# Fadeprint – Build Plan
+# Tracelow – Build Plan
 
-> Working name "Fadeprint". Brand, tagline, prices, plan limits live in **`config/brand.json`** and
+> Working name "Tracelow". Brand, tagline, prices, plan limits live in **`config/brand.json`** and
 > **`config/plans.json`** only. Backend and frontend both read these files, so a rename or price
 > change needs no refactor.
 
@@ -135,3 +135,6 @@ M11 graph/assistant/voice · M12 legal/blog/scripts/launch · M13 hardening/depl
 * Backend dependencies pinned to the current releases (2026-11); `pip-audit` and `npm audit` report 0 known vulnerabilities.
 * Demo accounts use `@demo.example.com` (email validation rejects the special-use `.local` TLD).
 * Docker builds behind TLS-intercepting proxies: optional BuildKit secret `ca` (see docs/DEPLOYMENT.md).
+* **Renamed Fadeprint → Tracelow (2026-11-19):** fadeprint.com is an existing service with the same name and the same
+  business (people-search listing removal). "Tracelow": .com/.de/.app free in DNS, no company/app/trademark found in a
+  web search. Final DPMA/EUIPO register search is still open (registers block automated queries).

@@ -44,7 +44,7 @@ function Login() {
       <div><h1 className="text-2xl font-bold">{t("auth.login.title")}</h1><p className="text-sm text-muted-foreground">{t("auth.login.sub")}</p></div>
       {cfg.data?.demo_mode && (
         <Alert><strong>{t("auth.demo.title")}:</strong> {t("auth.demo.text")}<br />
-          <button className="mt-1 font-mono text-xs underline" onClick={() => { setEmail("demo@demo.example.com"); setPw("FadeprintDemo1!"); }}>demo@demo.example.com / FadeprintDemo1!</button>
+          <button className="mt-1 font-mono text-xs underline" onClick={() => { setEmail("demo@demo.example.com"); setPw("TracelowDemo1!"); }}>demo@demo.example.com / TracelowDemo1!</button>
         </Alert>
       )}
       <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); run(async () => {

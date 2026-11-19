@@ -20,7 +20,7 @@ total = int(sys.argv[3]) if len(sys.argv) > 3 else 200
 c = httpx.Client(base_url=base, timeout=20)
 c.get("/api/health")
 csrf = c.cookies.get("fp_csrf")
-r = c.post("/api/auth/login", json={"email": "demo@demo.example.com", "password": "FadeprintDemo1!"}, headers={"x-csrf-token": csrf})
+r = c.post("/api/auth/login", json={"email": "demo@demo.example.com", "password": "TracelowDemo1!"}, headers={"x-csrf-token": csrf})
 r.raise_for_status()
 cookies = dict(c.cookies)
 paths = ["/api/home", "/api/findings", "/api/risk", "/api/timeline", "/api/requests", "/api/health"]

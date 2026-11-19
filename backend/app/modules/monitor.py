@@ -28,7 +28,7 @@ from app.models import (
 from app.settings import brand, get_settings
 
 router = APIRouter(tags=["monitor"])
-log = logging.getLogger("fadeprint.monitor")
+log = logging.getLogger("tracelow.monitor")
 SEV = {"low": 0, "medium": 1, "high": 2}
 
 

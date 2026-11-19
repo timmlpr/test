@@ -1,4 +1,4 @@
-"""Fadeprint API – application factory, middleware (CSRF, security headers), router wiring."""
+"""Tracelow API – application factory, middleware (CSRF, security headers), router wiring."""
 from __future__ import annotations
 
 import logging
@@ -14,7 +14,7 @@ from app.core.security import CSRF_COOKIE, CSRF_HEADER
 from app.settings import brand, get_settings, plans
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
-log = logging.getLogger("fadeprint")
+log = logging.getLogger("tracelow")
 
 CSRF_EXEMPT = {"/api/billing/webhook", "/api/auth/oauth/apple/callback"}
 SAFE = {"GET", "HEAD", "OPTIONS"}

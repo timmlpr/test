@@ -1,9 +1,9 @@
 {
-  "name": "Fadeprint",
+  "name": "Tracelow",
   "tagline_de": "Mach deinen digitalen Fußabdruck kleiner.",
   "tagline_en": "Make your digital footprint smaller.",
-  "domain": "fadeprint.example",
-  "support_email": "hilfe@fadeprint.example",
+  "domain": "tracelow.example",
+  "support_email": "hilfe@tracelow.example",
   "colors": { "primary": "#2563eb", "accent": "#10b981" },
   "default_address_form": "du",
   "operator": {

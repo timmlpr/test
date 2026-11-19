@@ -6,7 +6,7 @@ import logging
 from app.db import Base, engine
 from app.settings import get_settings
 
-log = logging.getLogger("fadeprint.bootstrap")
+log = logging.getLogger("tracelow.bootstrap")
 
 
 def bootstrap() -> None:

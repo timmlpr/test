@@ -8,7 +8,7 @@ test("landing page: hero, steps, pricing, FAQ, trust, waitlist", async ({ page }
   await expect(page.getByRole("heading", { name: "So funktioniert’s" })).toBeVisible();
   await expect(page.getByText("3,99 €").first()).toBeVisible();
   await expect(page.getByText("Am beliebtesten")).toHaveCount(0); // not claimed without data
-  await page.getByText("Sucht Fadeprint auch nach anderen Personen?").click();
+  await page.getByText("Sucht Tracelow auch nach anderen Personen?").click();
   await expect(page.getByText("ausschließlich nach deinen eigenen")).toBeVisible();
   await page.locator("#wl-email").fill(`e2e-${Date.now()}@example.org`);
   await page.getByText("Ich möchte per E-Mail über den Start").click();

@@ -1,4 +1,4 @@
-"""Hard-limit tests (H1–H8). These must stay green; they prove that Fadeprint cannot be used against third parties."""
+"""Hard-limit tests (H1–H8). These must stay green; they prove that Tracelow cannot be used against third parties."""
 from app.core.guard import check_text, is_plate_like
 from tests.conftest import register
 

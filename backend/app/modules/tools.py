@@ -286,4 +286,4 @@ def image_reverse(body: ReverseIn, user: User = Depends(current_user)):
     if not body.own_image:
         raise ApiError(400, "own_image_required")
     return {"links": reverse_links(body.public_url),
-            "note": "Nur für deine eigenen Bilder. Fadeprint führt keine Gesichtserkennung durch."}
+            "note": "Nur für deine eigenen Bilder. Tracelow führt keine Gesichtserkennung durch."}

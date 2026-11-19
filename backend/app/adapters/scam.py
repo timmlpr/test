@@ -13,7 +13,7 @@ class SafeBrowsing(Adapter):
 
     def check(self, url: str) -> dict:
         k = self.require_key()
-        body = {"client": {"clientId": "fadeprint", "clientVersion": "1.0"},
+        body = {"client": {"clientId": "tracelow", "clientVersion": "1.0"},
                 "threatInfo": {"threatTypes": ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE", "POTENTIALLY_HARMFUL_APPLICATION"],
                                "platformTypes": ["ANY_PLATFORM"], "threatEntryTypes": ["URL"], "threatEntries": [{"url": url}]}}
         r = self.http("POST", f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={k}", json=body)

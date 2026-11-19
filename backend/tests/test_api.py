@@ -107,7 +107,7 @@ def test_identifier_verification_flows(api, user):
     assert api.post(f"/api/profile/identifiers/{r['id']}/verify", json={"code": "000000"}).status_code == 400
     assert api.post(f"/api/profile/identifiers/{r['id']}/verify", json={"code": code}).json()["verified"]
     d = api.post("/api/profile/identifiers", json={"kind": "domain", "value": "https://www.anna.example/", "own_data": True}).json()
-    assert d["value"] == "anna.example" and d["dns_txt"].startswith("fadeprint-verify=")
+    assert d["value"] == "anna.example" and d["dns_txt"].startswith("tracelow-verify=")
     e = api.post("/api/profile/identifiers", json={"kind": "email", "value": "zweit@example.org", "own_data": True}).json()
     assert not e["verified"] and e["pending_reason"] == "check_inbox"
 

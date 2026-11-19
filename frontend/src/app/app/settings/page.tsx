@@ -81,7 +81,7 @@ export default function Settings() {
 
       <Card><CardHeader><CardTitle className="text-base">Deine Daten</CardTitle></CardHeader>
         <CardContent className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => download("/profile/export", "fadeprint-export.json")}>{t("set.export")}</Button>
+          <Button variant="outline" onClick={() => download("/profile/export", "tracelow-export.json")}>{t("set.export")}</Button>
           <Button variant="outline" onClick={() => run(async () => { await api("/auth/logout-all", { method: "POST" }); location.href = "/login"; })}>{t("set.logoutAll")}</Button>
           <Button variant="destructive" onClick={() => setDel(true)}>{t("set.delete")}</Button>
         </CardContent></Card>

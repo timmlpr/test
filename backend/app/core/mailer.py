@@ -8,7 +8,7 @@ from email.message import EmailMessage
 
 from app.settings import get_settings
 
-log = logging.getLogger("fadeprint.mail")
+log = logging.getLogger("tracelow.mail")
 OUTBOX: deque = deque(maxlen=100)
 
 

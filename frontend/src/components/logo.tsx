@@ -2,7 +2,7 @@
 import { useId } from "react";
 import { brand } from "@/lib/brand";
 
-/** Original mark: a footprint whose toes dissolve into dots – "fading print". */
+/** Original mark: a footprint whose toes dissolve into dots – "leaving only a low trace". */
 export function LogoMark({ className = "h-8 w-8" }: { className?: string }) {
   const gid = `fpg${useId().replace(/:/g, "")}`; // unique per instance: hidden copies must not own the gradient
   return (

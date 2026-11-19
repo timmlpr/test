@@ -51,7 +51,7 @@ class BraveSearch(Adapter):
                 for w in r.json().get("web", {}).get("results", [])]
 
     def test(self) -> str:
-        self.search("Fadeprint")
+        self.search("Tracelow")
         return "ok"
 
 

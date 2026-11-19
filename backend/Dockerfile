@@ -13,8 +13,8 @@ RUN --mount=type=secret,id=ca,required=false \
 COPY backend/ /app/
 COPY config/ /config/
 ENV FP_CONFIG_DIR=/config UPLOAD_DIR=/data/uploads
-RUN useradd -r -u 10001 fadeprint && mkdir -p /data/uploads && chown -R fadeprint /data
-USER fadeprint
+RUN useradd -r -u 10001 tracelow && mkdir -p /data/uploads && chown -R tracelow /data
+USER tracelow
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --retries=5 CMD curl -fsS http://127.0.0.1:8000/api/health || exit 1
 CMD ["sh", "-c", "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips='*'"]

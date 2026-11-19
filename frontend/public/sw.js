@@ -1,4 +1,4 @@
-/* Fadeprint service worker: offline shell, static caching, web push. Never caches API responses (personal data). */
+/* Tracelow service worker: offline shell, static caching, web push. Never caches API responses (personal data). */
 const VERSION = "fp-v1";
 const SHELL = ["/offline.html", "/icons/icon-192.png", "/icons/icon.svg"];
 
@@ -22,7 +22,7 @@ self.addEventListener("fetch", (e) => {
   }
 });
 self.addEventListener("push", (e) => {
-  let data = { title: "Fadeprint", body: "Es gibt Neuigkeiten.", url: "/app" };
+  let data = { title: "Tracelow", body: "Es gibt Neuigkeiten.", url: "/app" };
   try { data = { ...data, ...e.data.json() }; } catch (_) {}
   e.waitUntil(self.registration.showNotification(data.title, { body: data.body, icon: "/icons/icon-192.png", badge: "/icons/icon-192.png", data: { url: data.url } }));
 });

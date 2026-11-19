@@ -1,4 +1,4 @@
-# Fadeprint – Start unter Windows (Doppelklick auf start.bat ruft dieses Skript auf).
+# Tracelow – Start unter Windows (Doppelklick auf start.bat ruft dieses Skript auf).
 # Nutzt Docker Desktop, falls vorhanden; sonst Python + Node.js (werden bei Bedarf per winget installiert).
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
@@ -23,7 +23,7 @@ if ((Has docker) -and ((docker info 2>$null) -ne $null)) {
   Start-Process -WindowStyle Minimized -FilePath "npx.cmd" -ArgumentList "next start -p 3000"
   Pop-Location
 }
-Write-Host "Warte auf Fadeprint ..." -ForegroundColor Cyan
+Write-Host "Warte auf Tracelow ..." -ForegroundColor Cyan
 for ($i = 0; $i -lt 120; $i++) { try { Invoke-WebRequest -UseBasicParsing http://localhost:3000/api/health | Out-Null; break } catch { Start-Sleep 2 } }
 Start-Process "http://localhost:3000"
-Write-Host "Fadeprint laeuft: http://localhost:3000  Demo-Login: demo@demo.example.com / FadeprintDemo1!" -ForegroundColor Green
+Write-Host "Tracelow laeuft: http://localhost:3000  Demo-Login: demo@demo.example.com / TracelowDemo1!" -ForegroundColor Green

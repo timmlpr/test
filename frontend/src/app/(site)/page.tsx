@@ -22,9 +22,9 @@ const features = [
 ] as const;
 
 const faq = [
-  ["Sucht Fadeprint auch nach anderen Personen?", "Nein. Gesucht wird ausschließlich nach deinen eigenen, bestätigten Angaben. Eine freie Personensuche gibt es nicht – technisch nicht und auch nicht für Admins."],
+  ["Sucht Tracelow auch nach anderen Personen?", "Nein. Gesucht wird ausschließlich nach deinen eigenen, bestätigten Angaben. Eine freie Personensuche gibt es nicht – technisch nicht und auch nicht für Admins."],
   ["Woher kommen die Daten?", "Aus erlaubten öffentlichen Quellen und offiziellen Schnittstellen, z. B. Datenleck-Datenbanken, Wikipedia oder Such-Schnittstellen. Wir umgehen keine Logins, Captchas oder Paywalls."],
-  ["Löscht Fadeprint meine Daten automatisch?", "Wir erstellen fertige Lösch-Anfragen nach DSGVO. Versenden tust du sie selbst – so behältst du die Kontrolle, und es ist rechtlich eindeutig, dass die Anfrage von dir kommt."],
+  ["Löscht Tracelow meine Daten automatisch?", "Wir erstellen fertige Lösch-Anfragen nach DSGVO. Versenden tust du sie selbst – so behältst du die Kontrolle, und es ist rechtlich eindeutig, dass die Anfrage von dir kommt."],
   ["Was kostet das?", "Der Basis-Check ist kostenlos. Premium kostet 3,99 € im Monat und ist monatlich kündbar – mit einem Klick."],
   ["Wo liegen meine Daten?", "Auf Servern in Deutschland. Sensible Angaben speichern wir verschlüsselt. Du kannst alles jederzeit exportieren oder löschen."],
   ["Ist das eine Rechtsberatung?", "Nein. Die Vorlagen helfen dir, deine Rechte wahrzunehmen, ersetzen aber keine anwaltliche Beratung."],

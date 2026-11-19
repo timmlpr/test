@@ -93,7 +93,7 @@ def report_pdf(rid: str, user: User = Depends(current_user), db: Session = Depen
 
     d = _get(db, user, rid)
     return StreamingResponse(io.BytesIO(render(d)), media_type="application/pdf",
-                             headers={"Content-Disposition": f'attachment; filename="fadeprint-report-v{d["version"]}.pdf"'})
+                             headers={"Content-Disposition": f'attachment; filename="tracelow-report-v{d["version"]}.pdf"'})
 
 
 @router.get("/{rid}/xlsx")
@@ -125,7 +125,7 @@ def report_xlsx(rid: str, user: User = Depends(current_user), db: Session = Depe
     wb.save(buf)
     return StreamingResponse(io.BytesIO(buf.getvalue()),
                              media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                             headers={"Content-Disposition": f'attachment; filename="fadeprint-report-v{d["version"]}.xlsx"'})
+                             headers={"Content-Disposition": f'attachment; filename="tracelow-report-v{d["version"]}.xlsx"'})
 
 
 @router.get("/compare/{a}/{b}")

@@ -30,7 +30,7 @@ export const de: Record<string, V> = {
   "err.own_data_required": "Bitte bestätige, dass es deine eigenen Daten sind.",
   "err.invalid_value": "Das Format passt nicht. Bitte prüfe die Eingabe.",
   "err.identifier_exists": "Diese Angabe ist schon gespeichert.",
-  "err.hard_limit": "Diese Anfrage ist bei Fadeprint ausgeschlossen. Fadeprint hilft nur bei deinen eigenen Daten.",
+  "err.hard_limit": "Diese Anfrage ist bei Tracelow ausgeschlossen. Tracelow hilft nur bei deinen eigenen Daten.",
   "err.no_verified_identifiers": "Bestätige zuerst mindestens eine eigene Angabe.",
   "err.no_verified_email": "Bestätige zuerst eine eigene E-Mail-Adresse.",
   "err.invalid_code": "Der Code stimmt nicht.",
@@ -64,14 +64,14 @@ export const de: Record<string, V> = {
 
   // ---- landing
   "landing.hero.title": "Mach deinen digitalen Fußabdruck kleiner.",
-  "landing.hero.sub": ds("Fadeprint zeigt dir, wo deine Daten im Netz auffindbar sind – und hilft dir Schritt für Schritt, sie zu löschen. Auf Deutsch, nach DSGVO, gehostet in der EU.",
-                         "Fadeprint zeigt Ihnen, wo Ihre Daten im Netz auffindbar sind – und hilft Ihnen Schritt für Schritt, sie zu löschen. Auf Deutsch, nach DSGVO, gehostet in der EU."),
+  "landing.hero.sub": ds("Tracelow zeigt dir, wo deine Daten im Netz auffindbar sind – und hilft dir Schritt für Schritt, sie zu löschen. Auf Deutsch, nach DSGVO, gehostet in der EU.",
+                         "Tracelow zeigt Ihnen, wo Ihre Daten im Netz auffindbar sind – und hilft Ihnen Schritt für Schritt, sie zu löschen. Auf Deutsch, nach DSGVO, gehostet in der EU."),
   "landing.hero.cta": "Kostenlos starten", "landing.hero.cta2": "Auf die Warteliste", "landing.hero.note": "Kostenloser Basis-Check. Keine Kreditkarte nötig.",
   "landing.steps.title": "So funktioniert’s",
   "landing.steps.1.t": "Profil anlegen", "landing.steps.1.d": "Name, E-Mail, Benutzernamen – nur deine eigenen Angaben.",
   "landing.steps.2.t": "Bestätigen", "landing.steps.2.d": "Du bestätigst, dass die Daten dir gehören. Erst dann wird gesucht.",
   "landing.steps.3.t": "Scannen und aufräumen", "landing.steps.3.d": "Du siehst Funde, Lecks und dein Risiko – und bekommst fertige Lösch-Anfragen.",
-  "landing.diff.title": "Warum Fadeprint?",
+  "landing.diff.title": "Warum Tracelow?",
   "landing.diff.1.t": "Deutschland und DSGVO im Fokus", "landing.diff.1.d": "Deutsche Quellen, fertige Anfragen nach Art. 15, 16 und 17 DSGVO, Fristen-Tracker.",
   "landing.diff.2.t": "Eine App statt fünf Tools", "landing.diff.2.d": "Datenlecks, Auffindbarkeit, Betrugs-Check, Abos und Sicherheits-Checkliste an einem Ort.",
   "landing.diff.3.t": "Kostenlos starten, klar weitermachen", "landing.diff.3.d": "Der Basis-Check ist kostenlos. Der Assistent nennt dir immer genau einen nächsten Schritt.",
@@ -85,7 +85,7 @@ export const de: Record<string, V> = {
   "landing.trust.3": "Passwörter verlassen nie deinen Browser im Klartext.",
   "landing.trust.4": "Lösch-Anfragen versendest du selbst. Wir senden nichts in deinem Namen.",
   "landing.trust.5": "Kündigung jederzeit mit einem Klick. Keine versteckten Kosten.",
-  "landing.wait.title": "Warteliste", "landing.wait.sub": "Wir öffnen Fadeprint in Wellen. Trag dich ein – wir melden uns.",
+  "landing.wait.title": "Warteliste", "landing.wait.sub": "Wir öffnen Tracelow in Wellen. Trag dich ein – wir melden uns.",
   "landing.wait.consent": "Ich möchte per E-Mail über den Start informiert werden. Abmeldung jederzeit möglich.",
   "landing.wait.button": "Eintragen", "landing.wait.done": "Fast geschafft! Bitte bestätige den Link in deinem Postfach.",
 
@@ -207,7 +207,7 @@ export const de: Record<string, V> = {
   "img.title": "Bild-Check", "img.explain": "Zeige und entferne Metadaten (z. B. GPS-Ort) deiner eigenen Bilder. Bilder werden nur im Arbeitsspeicher verarbeitet und nicht gespeichert.",
   "img.own": "Das ist mein eigenes Bild (oder ich habe die Rechte daran).", "img.upload": "Bild auswählen", "img.analyze": "Analysieren", "img.strip": "Metadaten entfernen und herunterladen",
   "img.exif": "Metadaten", "img.gps": "Achtung: Das Bild enthält einen GPS-Standort.", "img.ela": "Fehlerstufen-Analyse (ELA)", "img.ai": "KI-Hinweise (unsicher)",
-  "img.reverse": "Wo taucht mein Bild auf?", "img.reverseHint": "Öffne eine Bildersuche und lade dort dein Bild hoch. Fadeprint macht keine Gesichtserkennung.",
+  "img.reverse": "Wo taucht mein Bild auf?", "img.reverseHint": "Öffne eine Bildersuche und lade dort dein Bild hoch. Tracelow macht keine Gesichtserkennung.",
 
   // ---- checklists
   "check.title": "Sicherheits-Checkliste", "check.explain": "Acht Punkte, die dich wirklich schützen. Jeder erledigte Punkt senkt deinen Risiko-Wert.",
@@ -215,7 +215,7 @@ export const de: Record<string, V> = {
   "social.title": "Social-Media-Check", "social.explain": "Schritt für Schritt deine eigenen Konten absichern. Wir fragen nie nach Passwörtern und melden uns nirgends an.",
 
   // ---- monitor / timeline / notifications
-  "mon.title": "Überwachung", "mon.explain": "Fadeprint prüft regelmäßig erneut und meldet nur, was neu ist.",
+  "mon.title": "Überwachung", "mon.explain": "Tracelow prüft regelmäßig erneut und meldet nur, was neu ist.",
   "mon.enabled": "Überwachung aktiv", "mon.frequency": "Wie oft?", "mon.daily": "Täglich", "mon.weekly": "Wöchentlich",
   "mon.severity": "Nur melden ab Risiko", "mon.quiet": "Ruhezeit (keine Benachrichtigung)", "mon.push": "Push-Nachricht", "mon.email": "E-Mail",
   "mon.run": "Jetzt prüfen", "mon.last": "Zuletzt geprüft", "mon.pushEnable": "Push auf diesem Gerät erlauben",
@@ -228,7 +228,7 @@ export const de: Record<string, V> = {
   "subs.unsubscribe": "Abmelden", "subs.deleteAccount": "Löschung beantragen", "subs.howto": "So exportierst du deine Mails",
   "subs.oauth": "Die direkte Gmail-Verbindung ist auf diesem Server noch nicht eingerichtet. Der Mail-Export funktioniert immer.",
   "subs.mailboxTitle": "Oder: Gmail direkt verbinden (nur Lesen)",
-  "subs.mailboxHint": "Fadeprint liest nur Kopfzeilen (Absender, Betreff, Datum, Abmelde-Link) – keine Inhalte, keine Anhänge. Du kannst die Verbindung jederzeit trennen; dann widerrufen wir den Zugriff sofort bei Google.",
+  "subs.mailboxHint": "Tracelow liest nur Kopfzeilen (Absender, Betreff, Datum, Abmelde-Link) – keine Inhalte, keine Anhänge. Du kannst die Verbindung jederzeit trennen; dann widerrufen wir den Zugriff sofort bei Google.",
   "subs.mailboxConnect": "Gmail verbinden", "subs.mailboxConnected": "Postfach verbunden und analysiert.", "subs.mailboxSync": "Jetzt abgleichen",
   "subs.mailboxDisconnect": "Verbindung trennen", "subs.mailboxLast": "Zuletzt abgeglichen",
   "docs.title": "Dokumenten-Scanner", "docs.explain": "Lade Verträge oder Briefe hoch. Wir erkennen Fristen und sensible Daten und erinnern dich rechtzeitig. Verschlüsselt gespeichert.",
@@ -244,7 +244,7 @@ export const de: Record<string, V> = {
   "graph.familyHint": "Nur mit Zustimmung der Person. Wird nie durchsucht und nie mit Funden verknüpft.", "graph.familyConsent": "Die Person ist einverstanden.",
   "ai.title": "Assistent", "ai.explain": "Frag nach deinen eigenen Daten. Antworten nennen die Quelle und genau einen nächsten Schritt.",
   "ai.placeholder": "z. B. Was ist mein größtes Datenrisiko?", "ai.send": "Senden", "ai.mic": "Spracheingabe", "ai.speak": "Vorlesen",
-  "ai.micConsent": "Mikrofon nutzen? Die Spracherkennung läuft über deinen Browser. Fadeprint speichert keine Audiodaten.",
+  "ai.micConsent": "Mikrofon nutzen? Die Spracherkennung läuft über deinen Browser. Tracelow speichert keine Audiodaten.",
   "ai.classic": "Klassischer Modus (ohne KI)", "ai.notice": "Kostenlose KI-Angebote können Eingaben zur Verbesserung nutzen. Deshalb anonymisieren wir Namen, Adressen, Telefonnummern und E-Mails vor dem Senden.",
   "ai.suggest1": "Was ist mein größtes Datenrisiko?", "ai.suggest2": "Welche Lösch-Anfragen sind überfällig?", "ai.suggest3": "Wie viele Datenlecks habe ich?",
 
@@ -273,7 +273,7 @@ export const de: Record<string, V> = {
   "cookie.text": "Wir nutzen nur technisch notwendige Cookies (Anmeldung, Sicherheit). Es gibt kein Tracking. Falls wir später Statistik einsetzen, fragen wir dich vorher.",
   "cookie.ok": "Verstanden", "cookie.decline": "Nur notwendige",
   "feedback.title": "Feedback geben", "feedback.placeholder": "Was können wir besser machen?", "feedback.send": "Senden", "feedback.thanks": "Danke für dein Feedback!",
-  "abuse.title": "Missbrauch melden", "abuse.explain": "Du glaubst, jemand nutzt Fadeprint, um dich auszuforschen? Sag uns Bescheid. Wir prüfen jede Meldung.",
+  "abuse.title": "Missbrauch melden", "abuse.explain": "Du glaubst, jemand nutzt Tracelow, um dich auszuforschen? Sag uns Bescheid. Wir prüfen jede Meldung.",
   "cancel.title": "Vertrag kündigen", "cancel.explain": "Hier kannst du dein Abo kündigen – auch ohne Anmeldung. Du bekommst sofort eine Eingangsbestätigung per E-Mail.",
   "cancel.button": "Jetzt kündigen", "cancel.done": "Deine Kündigung ist eingegangen. Die Bestätigung ist per E-Mail unterwegs.",
 };

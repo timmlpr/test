@@ -3,7 +3,7 @@
 Ownership rules (H1):
   email   – confirmation link to that address
   phone   – one-time code via SMS adapter (or dev outbox in demo/dev)
-  domain  – DNS TXT record `fadeprint-verify=<token>`
+  domain  – DNS TXT record `tracelow-verify=<token>`
   name/city/username – own-data declaration (timestamped consent) + verified account email,
                        capped by the anomaly lock (max distinct names, config/plans.json)
 """
@@ -124,7 +124,7 @@ def add_identifier(body: IdentIn, request: Request, user: User = Depends(current
     elif body.kind == "domain":
         tok = secrets.token_hex(12)
         ident.code_hash = tok  # not secret: must be published in DNS
-        out["dns_txt"] = f"fadeprint-verify={tok}"
+        out["dns_txt"] = f"tracelow-verify={tok}"
         out["pending_reason"] = "add_dns_txt"
     audit(db, "profile.identifier_added", user.id, kind=body.kind)
     timeline(db, user.id, "change", f"Angabe hinzugefügt: {body.kind}")
@@ -151,7 +151,7 @@ def _send_phone_code(db: Session, user: User, ident: Identifier) -> dict:
             return {"pending_reason": "sms_unavailable"}
         from app.core.mailer import OUTBOX
 
-        OUTBOX.append({"to": "sms", "subject": "SMS-Code", "text": f"Dein Fadeprint-Code: {code}"})
+        OUTBOX.append({"to": "sms", "subject": "SMS-Code", "text": f"Dein Tracelow-Code: {code}"})
         return {"pending_reason": "enter_code", "dev_hint": "Code liegt im Dev-Postfach (kein SMS-Anbieter konfiguriert)."}
     from app.adapters.base import SourceUnavailable
     from app.adapters.sms import sms_provider
@@ -188,7 +188,7 @@ def verify_identifier(iid: str, body: VerifyIn, user: User = Depends(current_use
         from app.adapters.registry import get
 
         recs = get("dns_doh").records(ident.value).get("TXT", [])
-        if not any(f"fadeprint-verify={ident.code_hash}" in r for r in recs):
+        if not any(f"tracelow-verify={ident.code_hash}" in r for r in recs):
             raise ApiError(400, "dns_txt_not_found")
     elif ident.kind in ("name", "city", "username"):
         if not user.email_verified:
@@ -263,7 +263,7 @@ def export_data(user: User = Depends(current_user), db: Session = Depends(get_db
     data = collect(db, user)
     audit(db, "profile.export", user.id)
     db.commit()
-    return JSONResponse(data, headers={"Content-Disposition": 'attachment; filename="fadeprint-export.json"'})
+    return JSONResponse(data, headers={"Content-Disposition": 'attachment; filename="tracelow-export.json"'})
 
 
 class DeleteIn(BaseModel):

@@ -48,7 +48,7 @@ TEXTS = {
               "die bei Ihnen über mich gespeicherten Daten sind unrichtig bzw. unvollständig. Bitte berichtigen Sie diese "
               "unverzüglich (Art. 16 DSGVO). Die korrekten Angaben lauten: [BITTE ERGÄNZEN]."),
 }
-DISCLAIMER = "Hinweis: Diese Vorlage ist keine Rechtsberatung. Sie wurde mit Fadeprint erstellt und wird von dir selbst versendet."
+DISCLAIMER = "Hinweis: Diese Vorlage ist keine Rechtsberatung. Sie wurde mit Tracelow erstellt und wird von dir selbst versendet."
 
 
 def build(kind: str, *, sender_name: str, sender_email: str, recipient: str, url: str | None, template: str, address_form: str) -> tuple[str, str]:

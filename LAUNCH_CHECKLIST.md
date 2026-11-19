@@ -4,7 +4,7 @@
 - [ ] Choose legal form (Einzelunternehmen / UG / GmbH) and register the business (Gewerbeanmeldung, Finanzamt: Fragebogen zur steuerlichen Erfassung).
 - [ ] Decide small-business rule (§ 19 UStG) vs. standard VAT → `config/brand.json → operator.small_business`.
 - [ ] Fill operator data in `config/brand.json` (imprint is generated from it).
-- [ ] **Trademark search for "Fadeprint"**: DPMA (https://register.dpma.de), EUIPO (https://euipo.europa.eu/eSearch), WIPO Global Brand DB; check app stores and domains. Consider filing (classes 9, 42, 45).
+- [ ] **Trademark search for "Tracelow"** (web + DNS check done 2026-11-19: no conflict found; register search still open): DPMA (https://register.dpma.de), EUIPO (https://euipo.europa.eu/eSearch), WIPO Global Brand DB; check app stores and domains. Consider filing (classes 9, 42, 45).
 - [ ] Register domain(s) (.de / .com / .app).
 - [ ] **Lawyer review** of all drafts in `/legal`: imprint, privacy policy, terms (AGB), withdrawal policy + early-expiry consent for the one-time report (§ 356 Abs. 5 BGB – add checkbox to checkout), usage terms, "no legal advice", cookie concept.
 - [ ] Data-protection-officer assessment (§ 38 BDSG: ≥20 persons regularly processing personal data, or DPIA-mandatory core activity → likely **appoint** an external DPO; check with lawyer).

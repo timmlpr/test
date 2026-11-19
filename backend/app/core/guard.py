@@ -50,21 +50,21 @@ class Refusal:
 
 
 _MSG = {
-    "third_party": ("Das kann ich nicht machen. Fadeprint hilft nur bei deinen eigenen Daten – Recherchen über andere "
+    "third_party": ("Das kann ich nicht machen. Tracelow hilft nur bei deinen eigenen Daten – Recherchen über andere "
                     "Menschen sind ausgeschlossen. Wenn du selbst betroffen bist, prüfe gern deine eigenen Angaben.",
-                    "I can't do that. Fadeprint only helps with your own data – researching other people is not possible."),
-    "plate": ("Kennzeichen- oder Halterabfragen sind bei Fadeprint ausgeschlossen. Für Unfälle oder Anzeigen ist die "
+                    "I can't do that. Tracelow only helps with your own data – researching other people is not possible."),
+    "plate": ("Kennzeichen- oder Halterabfragen sind bei Tracelow ausgeschlossen. Für Unfälle oder Anzeigen ist die "
               "Polizei bzw. das Zentrale Fahrzeugregister zuständig.",
-              "Licence plate or vehicle-owner lookups are not available in Fadeprint."),
-    "face": ("Gesichtserkennung und das Identifizieren von Personen auf Fotos bietet Fadeprint bewusst nicht an. "
+              "Licence plate or vehicle-owner lookups are not available in Tracelow."),
+    "face": ("Gesichtserkennung und das Identifizieren von Personen auf Fotos bietet Tracelow bewusst nicht an. "
              "Du kannst aber prüfen, wo deine eigenen Bilder auftauchen.",
              "Face recognition or identifying people in photos is deliberately not offered."),
     "spying": ("Das Überwachen fremder Geräte, Konten oder Standorte ist ausgeschlossen. Wenn du dich selbst bedroht fühlst, "
                "helfen z. B. der Weiße Ring (116 006) oder die Polizei.",
                "Monitoring other people's devices, accounts or locations is not possible."),
-    "bypass": ("Fadeprint nutzt nur offizielle Schnittstellen und erlaubte Quellen. Logins, Captchas oder Paywalls "
+    "bypass": ("Tracelow nutzt nur offizielle Schnittstellen und erlaubte Quellen. Logins, Captchas oder Paywalls "
                "werden nicht umgangen.",
-               "Fadeprint only uses official APIs and permitted sources; it does not bypass logins, captchas or paywalls."),
+               "Tracelow only uses official APIs and permitted sources; it does not bypass logins, captchas or paywalls."),
 }
 
 

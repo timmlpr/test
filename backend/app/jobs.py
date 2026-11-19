@@ -25,7 +25,7 @@ from app.models import (
 )
 from app.settings import brand, get_settings
 
-log = logging.getLogger("fadeprint.jobs")
+log = logging.getLogger("tracelow.jobs")
 
 RETENTION = {  # documented in docs/PRIVACY.md (deletion & retention concept)
     "trash_days": 30, "waitlist_unconfirmed_days": 7, "ai_cache_days": 30, "audit_days": 365, "notifications_days": 180,
