@@ -61,7 +61,7 @@ def _check_corrections(db: Session, user: User, rec: Recording, text: str, at_s:
     for a in recent:
         if a.at_s is not None and at_s <= (a.at_s or 0) + 1:
             continue
-        sig = analyzers.detect_correction(a.text + " " + a.detail, a.question, text)
+        sig = analyzers.detect_correction(a.text, a.question, text)
         if not sig:
             continue
         corrected = text

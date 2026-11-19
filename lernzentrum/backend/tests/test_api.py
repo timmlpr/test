@@ -196,7 +196,7 @@ def test_llm_candidates_and_correction(api, module):
     _seed_material(api, module["id"])
     registry.OVERRIDES["llm"] = FakeLlm()
     rec = _start(api, module["id"]).json()
-    api.post(f"/api/recordings/{rec['id']}/simulate", json={"text": "Es geht um § 433 BGB. Welche Pflichten gibt es?"})
+    api.post(f"/api/recordings/{rec['id']}/simulate", json={"text": "Es geht um § 433 BGB. Welche Pflichten hat der Käufer?"})
     ev = api.get(f"/api/recordings/{rec['id']}/events").json()
     answers = next(e for e in ev if e["kind"] == "answer")["payload"]["answers"]
     assert len(answers) == 2 and answers[0]["probability"] >= answers[1]["probability"]

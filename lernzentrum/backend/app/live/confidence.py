@@ -7,6 +7,8 @@ p = 100 · (0.30·r + 0.25·c + 0.20·q + 0.10·a + 0.08·s + 0.07·m) − caps
   s  statute match: a cited statute is one the question/context refers to → 1
   q  question coverage: share of the question's own content terms found in the cited passages
   m  model self-rating (0..1), capped weight; 0.5 when no model was used
+Caps: question barely covered ≤ 70, sources contradict each other ≤ 60, answer mostly unsupported ≤ 60,
+model says "partial" ≤ 74 / "none" ≤ 40, corrected by the lecturer ≤ 30.
 Levels: SICHER ≥ 75, PRÜFEN 45–74, UNSICHER < 45. Without any evidence: ≤ 15 % and "keine Quelle".
 """
 from __future__ import annotations
@@ -68,7 +70,7 @@ def question_coverage(question: str, cited: list[Evidence]) -> float:
 
 
 def score(answer: str, cited: list[Evidence], *, self_rating: float | None = None, corrected: bool = False,
-          support_claim: str | None = None, question: str = "") -> Confidence:
+          support_claim: str | None = None, question: str = "", conflict: bool = False) -> Confidence:
     if not cited or not answer.strip():
         return Confidence(UNSICHER, 10 if answer.strip() else 0, "keine Quelle – nichts Passendes in deinen "
                           "Unterlagen oder Gesetzen gefunden", {"r": 0, "c": 0, "a": 0, "s": 0, "m": 0})
@@ -88,6 +90,8 @@ def score(answer: str, cited: list[Evidence], *, self_rating: float | None = Non
         p = min(p, 74)
     if corrected:
         p = min(p, 30)
+    if conflict:
+        p = min(p, 60)  # sources disagree (e.g. outdated script) → never SICHER
     if c < 0.34:
         p = min(p, 60)  # most of the answer is not backed by the cited passages
     pct = int(round(max(0, min(99, p))))
@@ -101,6 +105,8 @@ def score(answer: str, cited: list[Evidence], *, self_rating: float | None = Non
         why_bits.append("Treffer nur schwach passend")
     if question and q < 0.5:
         why_bits.append("Quellen decken die Frage nur teilweise ab")
+    if conflict:
+        why_bits.append("Quellen widersprechen sich – Stand/Fassung prüfen")
     if corrected:
         why_bits.append("vom Dozenten korrigiert")
     return Confidence(lvl, pct, "; ".join(why_bits), {"r": round(r, 2), "c": round(c, 2), "q": round(q, 2), "a": a, "s": s,

@@ -178,8 +178,10 @@ class DocPatch(BaseModel):
 def patch_document(did: int, body: DocPatch, user: User = Depends(current_user), db: Session = Depends(get_db)):
     d = _own_doc(db, did, user)
     if body.module_id is not None or body.kind or body.lecture_id:
-        confirm_assignment(db, d, body.module_id if body.module_id is not None else d.module_id, body.lecture_id,
-                           body.kind)
+        new_mod = d.module_id if body.module_id is None else (body.module_id or None)  # 0 = no module
+        if new_mod and (m := db.get(Module, new_mod)) and m.user_id != user.id:
+            raise HTTPException(404, "Modul nicht gefunden.")
+        confirm_assignment(db, d, new_mod, body.lecture_id, body.kind)
     if body.title:
         d.title = body.title[:300]
     db.commit()

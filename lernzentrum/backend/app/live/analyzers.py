@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from ..text import content_overlap, short, tokens
+from ..text import concepts, content_overlap, short, terms, tokens
 
 # ---------------------------------------------------------------- keyword alerts
 KEYWORD_CUES = [
@@ -107,16 +107,28 @@ class CorrectionSignal:
     statement: str
 
 
+AFFIRM = re.compile(r"^\s*(richtig|genau|korrekt|ja\b|stimmt|sehr gut|exakt)", re.I)
+
+
 def detect_correction(answer_text: str, question: str, new_text: str) -> CorrectionSignal | None:
-    """Heuristic: lecturer's later statement contradicts or qualifies a shown answer."""
-    topic_overlap = max(content_overlap(new_text, question + " " + answer_text),
-                        content_overlap(question, new_text))
+    """Heuristic: lecturer's later statement contradicts or qualifies a shown answer.
+
+    Requires that the statement is about the *question's* topic (shares at least one of its concepts) – a later
+    remark about something else never flags an answer. Affirmations ("Richtig, …") are not corrections unless a
+    number contradicts the answer."""
+    new_terms = set(terms(new_text))
+    q_concepts = concepts(question)
+    if not q_concepts or not any(c & new_terms for c in q_concepts):
+        return None
+    shared = sum(1 for c in q_concepts if c & new_terms) / len(q_concepts)
     q_ans, q_new = quantities(answer_text), quantities(new_text)
     for unit, vals in q_new.items():
-        if unit in q_ans and not (vals & q_ans[unit]) and topic_overlap >= 0.15:
+        if unit in q_ans and not (vals & q_ans[unit]):
             return CorrectionSignal(f"Zahl weicht ab ({', '.join(f'{v:g}' for v in sorted(q_ans[unit]))} → "
                                     f"{', '.join(f'{v:g}' for v in sorted(vals))})", 0.85, new_text)
-    if CORRECTION_CUES.search(new_text) and topic_overlap >= 0.25:
+    if AFFIRM.match(new_text):
+        return None
+    if CORRECTION_CUES.search(new_text) and (shared >= 0.5 or content_overlap(new_text, answer_text) >= 0.3):
         return CorrectionSignal("Dozent relativiert/korrigiert das Thema", 0.6, new_text)
     return None
 

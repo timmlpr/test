@@ -178,3 +178,28 @@ def test_envelope_encryption_binds_context():
     with pytest.raises(Exception):
         open_secret(sealed, "user:2:groq")
     assert mask("gsk_supersecretkey1234") == "gsk_…1234"
+
+
+def test_correction_requires_question_topic_and_ignores_affirmation():
+    q = "Wer muss nach Handelsrecht Bücher führen?"
+    a = "Jeder Kaufmann ist verpflichtet, Bücher zu führen."
+    assert analyzers.detect_correction(a, q, "Achtung, Buchungsbelege nur noch acht Jahre aufbewahren.") is None
+    assert analyzers.detect_correction(a, q, "Richtig, der Kaufmann muss Bücher führen, außer kleine Einzelkaufleute.") is None
+    assert analyzers.detect_correction(a, q, "Achtung, nicht jeder: Kleinunternehmer müssen keine Bücher führen.") is not None
+
+
+def test_source_conflict_caps_confidence():
+    from app.live.answer import sources_conflict
+
+    t = "Buchungsbelege sind zehn Jahre aufzubewahren. Buchungsbelege sind acht Jahre aufzubewahren."
+    assert sources_conflict(t)
+    ev = [Evidence("Buchungsbelege sind zehn Jahre aufzubewahren.", 0.9, "doc:1"),
+          Evidence("Buchungsbelege sind acht Jahre aufzubewahren.", 0.9, "doc:2")]
+    assert score(t, ev, question="Wie lange Buchungsbelege aufbewahren?", conflict=True).percent <= 60
+
+
+def test_expected_answer_kind():
+    from app.live.answer import expected_kinds
+
+    assert "amount" in expected_kinds("Ab welchem Umsatz gilt das?")
+    assert "dur" in expected_kinds("Wie lange müssen Belege aufbewahrt werden?")

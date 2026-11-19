@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Design tokens. Brand colors mirror config/brand.json. */
+:root {
+  --bg: #f7f6f2;
+  --surface: #ffffff;
+  --surface-2: #f0eee8;
+  --border: #e2dfd6;
+  --text: #1c2733;
+  --muted: #5d6875;
+  --primary: #2f5d8c;
+  --primary-fg: #ffffff;
+  --accent: #3e8e7e;
+  --sicher: #1f8a4c;
+  --pruefen: #a87a06;
+  --unsicher: #c0392b;
+  --sicher-bg: #e6f4ec;
+  --pruefen-bg: #fbf3dc;
+  --unsicher-bg: #fbe9e7;
+  --ring: #2f5d8c55;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #12151a;
+  --surface: #1a1f26;
+  --surface-2: #222831;
+  --border: #2e3640;
+  --text: #e8ebef;
+  --muted: #9aa5b1;
+  --primary: #8db4de;
+  --primary-fg: #0d1620;
+  --accent: #7cc4b4;
+  --sicher: #4cc583;
+  --pruefen: #e3b341;
+  --unsicher: #f07b6c;
+  --sicher-bg: #16301f;
+  --pruefen-bg: #33290f;
+  --unsicher-bg: #3a1c18;
+  --ring: #8db4de66;
+  color-scheme: dark;
+}
+
+/* lecture hall: extra dim on top of dark mode */
+.dim {
+  filter: brightness(0.72);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-accent: var(--accent);
+  --color-sicher: var(--sicher);
+  --color-pruefen: var(--pruefen);
+  --color-unsicher: var(--unsicher);
+  --color-sicher-bg: var(--sicher-bg);
+  --color-pruefen-bg: var(--pruefen-bg);
+  --color-unsicher-bg: var(--unsicher-bg);
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+html.large-type {
+  font-size: 19px;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  overscroll-behavior-y: none;
+  min-height: 100dvh;
+}
+
+/* iPad: safe areas in standalone mode */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--unsicher) 55%, transparent); }
+  70% { box-shadow: 0 0 0 14px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.rec-pulse {
+  animation: pulse-ring 1.8s infinite;
+}
+@keyframes flash-in {
+  from { background: color-mix(in srgb, var(--pruefen) 30%, transparent); }
+  to { background: transparent; }
+}
+.flash {
+  animation: flash-in 1.6s ease-out;
+}

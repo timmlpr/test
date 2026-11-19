@@ -6,6 +6,7 @@ Confidence is always computed by `confidence.score` from the evidence.
 """
 from __future__ import annotations
 
+import re
 import uuid
 from dataclasses import dataclass, field
 
@@ -74,11 +75,33 @@ def gather_evidence(db: Session, user: User, rq: ResolvedQuestion, module_id: in
     return items
 
 
+EXPECT = [
+    ("amount", re.compile(r"\b(wie ?viel|wie hoch|ab welche\w*|bis zu welche\w*|welche\w* (betrag|grenze|summe|umsatz|"
+                          r"gewinn|höhe|wert)|grenze|betrag)\b", re.I)),
+    ("dur", re.compile(r"\b(wie lange|wann verjähr\w*|welche frist|frist)\b", re.I)),
+    ("percent", re.compile(r"\b(prozent|steuersatz|satz|quote)\b", re.I)),
+]
+
+
+def expected_kinds(question: str) -> set[str]:
+    """What kind of answer the question asks for (amount, duration, percent) – used as a ranking hint."""
+    return {k for k, rx in EXPECT if rx.search(question)}
+
+
+def _has_kind(sentence: str, kinds: set[str]) -> bool:
+    from .analyzers import quantities
+
+    q = quantities(sentence)
+    return any((("amount" in kinds and "amount" in q), ("percent" in kinds and "percent" in q),
+                ("dur" in kinds and any(u not in ("amount", "percent") for u in q))))
+
+
 def _extractive(question: str, query: str, items: list[EvidenceItem], n: int) -> tuple[str, list[EvidenceItem]]:
     """Pick the evidence sentences that best cover the question's concepts (IDF-weighted over the candidates)."""
     import math
 
     focus = concepts(question)
+    kinds = expected_kinds(question)
     ctx_all = set(terms(query.replace(question, " ")))
     ctx_terms = ctx_all - set().union(*focus) if focus else ctx_all
     cands: list[tuple[str, EvidenceItem, set[str]]] = []
@@ -89,6 +112,7 @@ def _extractive(question: str, query: str, items: list[EvidenceItem], n: int) ->
     if not cands:
         return "", []
     n_c = len(cands)
+    chunk_terms = {id(it): set(terms(it.evidence.text)) for it in items}
     # concepts already talked about in the lecture context weigh less than what is new in the question
     idf = [math.log(1 + n_c / (1 + sum(1 for _, _, ts in cands if ts & c))) * (0.5 if c & ctx_all else 1.0)
            for c in focus]
@@ -96,10 +120,13 @@ def _extractive(question: str, query: str, items: list[EvidenceItem], n: int) ->
     scored: list[tuple[float, str, EvidenceItem]] = []
     for s, it, ts in cands:
         cov = sum(w for c, w in zip(focus, idf) if ts & c) / total
+        # the passage as a whole (incl. its heading) must be about the question, not just the sentence
+        chunk_cov = sum(w for c, w in zip(focus, idf) if chunk_terms[id(it)] & c) / total
         head = set(terms(" ".join(s.split()[:6])))
         lead = sum(w for c, w in zip(focus, idf) if head & c) / total
         ctx = len(ts & ctx_terms) / max(1, len(ctx_terms))
-        sc = (2 * cov + 0.3 * lead + 0.4 * ctx) * (0.7 + 0.3 * it.evidence.score)
+        typed = 0.6 if kinds and _has_kind(s, kinds) else 0.0
+        sc = (2 * cov + 1.0 * chunk_cov + 0.3 * lead + 0.4 * ctx + typed) * (0.7 + 0.3 * it.evidence.score)
         scored.append((sc, s, it))
     scored.sort(key=lambda x: -x[0])
     chosen: list[tuple[str, EvidenceItem]] = []
@@ -115,6 +142,20 @@ def _extractive(question: str, query: str, items: list[EvidenceItem], n: int) ->
         if it not in used:
             used.append(it)
     return text, used
+
+
+def sources_conflict(text: str) -> bool:
+    """Two statements on the same topic with different numbers (e.g. outdated script vs. new slide)."""
+    from .analyzers import quantities
+
+    sents = [x for x in sentences(_strip_cites(text)) if quantities(x)]
+    for i, a in enumerate(sents):
+        qa = quantities(a)
+        for b in sents[i + 1:]:
+            qb = quantities(b)
+            if content_overlap(a, b) >= 0.3 and any(u in qb and not qa[u] & qb[u] for u in qa):
+                return True
+    return False
 
 
 def _strip_cites(text: str) -> str:
@@ -149,14 +190,24 @@ def _llm_answer(db: Session, user: User, rq: ResolvedQuestion, ctx: LiveContext 
     return data["readings"][:3]
 
 
-def _ambiguous_extractive(items: list[EvidenceItem]) -> list[list[EvidenceItem]]:
-    """Two readings when the top material hits point to different norms with similar scores."""
+def _ambiguous_extractive(question: str, items: list[EvidenceItem]) -> list[list[EvidenceItem]]:
+    """Without an LLM, offer two readings only for vague questions (≤ 1 own concept, e.g. "Und warum gilt das?")
+    whose two best material hits point to different norms with similar scores. Otherwise one reading."""
+    if len(concepts(question)) > 1:
+        return [items]
     mats = [i for i in items if not i.evidence.is_statute]
-    if len(mats) >= 2 and mats[0].evidence.score - mats[1].evidence.score < 0.05:
+    if len(mats) >= 2 and mats[0].evidence.score - mats[1].evidence.score < 0.08:
         a, b = set(mats[0].source.get("statutes", [])), set(mats[1].source.get("statutes", []))
         if a and b and not a & b:
-            return [[mats[0]], [mats[1]]]
+            statutes = [i for i in items if i.evidence.is_statute]
+            return [[mats[0], *statutes], [mats[1], *statutes]]
     return [items]
+
+
+def _reading_label(item: EvidenceItem) -> str:
+    first = sentences(item.evidence.text)[:1]
+    head = first[0] if first else item.source.get("label", "")
+    return short(head.rstrip("."), 70)
 
 
 def answer(db: Session, user: User, question: str, *, module_id: int | None, ctx: LiveContext | None = None,
@@ -173,19 +224,20 @@ def answer(db: Session, user: User, question: str, *, module_id: int | None, ctx
             short_t, detail_t = str(r.get("short", "")), str(r.get("detailed", ""))
             conf = score(_strip_cites(detail_t or short_t), [c.evidence for c in cited],
                          self_rating=float(r.get("self_confidence", 0.5) or 0.5), support_claim=r.get("support"),
-                         question=rq.question)
+                         question=rq.question, conflict=sources_conflict(" ".join(c.evidence.text for c in cited)))
             results.append(AnswerResult(r.get("reading") or question, float(r.get("probability", 1.0) or 1.0),
                                         short_t, detail_t, [c.source | {"sid": c.sid} for c in cited], conf.level,
                                         conf.percent, conf.why, "gemini", conf.factors))
     else:
-        groups = _ambiguous_extractive(items) if items else [[]]
+        groups = _ambiguous_extractive(question, items) if items else [[]]
         for g_i, group in enumerate(groups):
             evid = group if len(groups) > 1 else items
             short_t, used = _extractive(question, rq.query, evid, 2)
             detail_t, used_d = _extractive(question, rq.query, evid, 5)
-            conf = score(_strip_cites(detail_t), [u.evidence for u in used_d], question=rq.question)
+            conf = score(_strip_cites(detail_t), [u.evidence for u in used_d], question=rq.question,
+                         conflict=sources_conflict(detail_t))
             prob = 1.0 if len(groups) == 1 else round((0.6 if g_i == 0 else 0.4), 2)
-            reading = question if len(groups) == 1 else f"{question} – im Sinne von {group[0].source['label']}"
+            reading = question if len(groups) == 1 else f"im Sinne von „{_reading_label(group[0])}“"
             results.append(AnswerResult(reading, prob, short_t or "Keine Quelle gefunden.", detail_t or short_t,
                                         [u.source | {"sid": u.sid} for u in used_d or used], conf.level, conf.percent,
                                         conf.why + ("; extraktiv (kein Gemini-Key)" if used_d else ""), "extractive",

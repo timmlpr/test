@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 256" role="img" aria-label="Lernzentrum">
+  <g transform="scale(0.5)">
+    <rect width="512" height="512" rx="112" fill="#2F5D8C"/>
+    <path d="M150 128v232h150" fill="none" stroke="#fff" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M262 214a58 58 0 0 1 0 82" fill="none" stroke="#9FD3C7" stroke-width="30" stroke-linecap="round"/>
+    <path d="M316 168a122 122 0 0 1 0 174" fill="none" stroke="#9FD3C7" stroke-width="30" stroke-linecap="round" opacity=".75"/>
+    <path d="M370 124a184 184 0 0 1 0 262" fill="none" stroke="#9FD3C7" stroke-width="30" stroke-linecap="round" opacity=".45"/>
+  </g>
+  <text x="300" y="170" font-family="-apple-system, 'SF Pro Display', Inter, 'Segoe UI', sans-serif" font-size="150" font-weight="700" fill="#1C2733" letter-spacing="-3">Lernzentrum</text>
+</svg>
