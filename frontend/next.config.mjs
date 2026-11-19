@@ -1,10 +1,12 @@
 /** @type {import('next').NextConfig} */
 const backend = process.env.BACKEND_URL || "http://127.0.0.1:8000";
+// Default: never framed. The private Hugging Face demo build sets FRAME_ANCESTORS so the Space page may embed it.
+const frameAncestors = process.env.FRAME_ANCESTORS || "'none'";
 
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  { key: "X-Frame-Options", value: "DENY" },
+  ...(process.env.FRAME_ANCESTORS ? [] : [{ key: "X-Frame-Options", value: "DENY" }]),
   { key: "Permissions-Policy", value: "camera=(), geolocation=(), microphone=(self), payment=(self)" },
   {
     key: "Content-Security-Policy",
@@ -15,7 +17,7 @@ const securityHeaders = [
       "img-src 'self' data: blob: https:",
       "font-src 'self'",
       "connect-src 'self'",
-      "frame-ancestors 'none'",
+      `frame-ancestors ${frameAncestors}`,
       "form-action 'self' https://checkout.stripe.com https://accounts.google.com https://appleid.apple.com",
       "base-uri 'self'",
       "worker-src 'self'",
