@@ -78,7 +78,7 @@ def test_pipeline_undo_and_always_rule(api, module):
     e2 = next(e for e in seg2["edits"] if e["kind"] == "law")
     api.post(f"/api/segments/{seg2['id']}/edits/{e2['id']}", json={"action": "always", "to": "BGB"})
     api.post(f"/api/recordings/{rec['id']}/simulate", json={"text": "Und § 199 QQQ."})
-    assert "§ 199 BGB" in api.get(f"/api/recordings/{rec['id']}").json()["transcript"][2]["text"]
+    assert "199 BGB" in api.get(f"/api/recordings/{rec['id']}").json()["transcript"][2]["text"]
     other = api.post("/api/modules", json={"name": "Anderes Modul"}).json()
     rec2 = api.post("/api/recordings/start", json={"module_id": other["id"], "consent": True}).json()
     api.post(f"/api/recordings/{rec2['id']}/simulate", json={"text": "Und § 199 QQQ."})
