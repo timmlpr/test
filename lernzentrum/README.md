@@ -63,3 +63,4 @@ Weitere Dokumente: [PLAN.md](PLAN.md) · [SETUP_GUIDE.md](SETUP_GUIDE.md) · [AR
 
 ## Changelog
 - 2026-11: Kontext-Korrektur (Regel- und Kontextschichten, Rückgängig, eigene Regeln). UI-Marker mit Popover und „Original anzeigen“. Offen: Gemini-Schiedsrichter, Batch-Neukorrektur, Eval-Set.
+- Eval-Set (107 Proben, `python -m eval.correction_eval`): Präzision 100 %, Recall 100 % – Proben aus bekannten Fehlermustern generiert, echte Aufnahmen stehen noch aus.

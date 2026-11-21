@@ -83,3 +83,10 @@ def test_pipeline_undo_and_always_rule(api, module):
     rec2 = api.post("/api/recordings/start", json={"module_id": other["id"], "consent": True}).json()
     api.post(f"/api/recordings/{rec2['id']}/simulate", json={"text": "Und § 199 QQQ."})
     assert "QQQ" in api.get(f"/api/recordings/{rec2['id']}").json()["transcript"][0]["text"]
+
+
+def test_evaluation_set_precision():
+    from eval.correction_eval import evaluate
+
+    r = evaluate()
+    assert r["samples"] >= 100 and r["precision"] >= 0.98, r["errors"]
