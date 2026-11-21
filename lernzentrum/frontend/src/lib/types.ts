@@ -115,6 +115,21 @@ export interface Segment {
   end_s: number;
   text: string;
   flags: string[];
+  original?: string;
+  edits?: CorrectionEdit[];
+}
+
+export interface CorrectionEdit {
+  id: string;
+  start: number;
+  end: number;
+  from: string;
+  to: string | null;
+  kind: "norm" | "law" | "term";
+  reason: string;
+  confidence: number;
+  status: "applied" | "check" | "unclear" | "accepted" | "undone";
+  candidates?: { to: string; confidence: number; reason: string }[];
 }
 
 export interface Doc {

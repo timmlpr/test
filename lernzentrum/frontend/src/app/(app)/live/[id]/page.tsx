@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnswerGroup, SourceSheet } from "@/components/answer-card";
+import { TranscriptText } from "@/components/transcript-text";
 import { useApp } from "@/components/providers";
 import { Badge, Button, Card, cn, Input, ModuleChip, Notice, Spinner } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -37,6 +38,7 @@ export default function LiveSession() {
   const [status, setStatus] = useState<{ level: string; message: string } | null>(null);
   const [examGuard, setExamGuard] = useState<string | null>(null);
   const [hidden, setHidden] = useState(false);
+  const [showOriginal, setShowOriginal] = useState(false);
   const [mode, setMode] = useState<"short" | "detailed">("short");
   const [alert, setAlert] = useState<KeywordEv | null>(null);
   const [rs, setRs] = useState<RecorderState | null>(null);
@@ -303,6 +305,7 @@ export default function LiveSession() {
           {largeType ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />} Groß
         </Button>
         <Button variant="outline" size="sm" onClick={() => setDim(!dim)} aria-pressed={dim}>Dimmen</Button>
+        <Button variant={showOriginal ? "primary" : "outline"} size="sm" onClick={() => setShowOriginal(!showOriginal)} aria-pressed={showOriginal}>Original anzeigen</Button>
         <div className="flex rounded-xl border border-border p-0.5" role="group" aria-label="Antwortlänge">
           {(["short", "detailed"] as const).map((m) => (
             <button key={m} onClick={() => switchMode(m)} className={cn("h-9 rounded-lg px-3 text-sm font-medium", mode === m ? "bg-primary text-primary-fg" : "text-muted")}>
@@ -375,7 +378,9 @@ export default function LiveSession() {
                 {segments.map((s) => (
                   <li key={s.id} id={`seg-${s.id}`} className={cn("flex gap-3 rounded-lg px-2 py-1", s.flags?.includes("keyword") && "bg-pruefen-bg", s.flags?.includes("question") && "border-l-4 border-primary")}>
                     <span className="w-12 shrink-0 pt-0.5 text-xs tabular-nums text-muted">{fmtDuration(s.start_s)}</span>
-                    <span className={cn(largeType ? "text-lg" : "", s.flags?.includes("late") && "italic")}>{s.text}</span>
+                    <span className={cn(largeType ? "text-lg" : "", s.flags?.includes("late") && "italic")}>
+                      <TranscriptText seg={s} showOriginal={showOriginal} onChange={(n) => setSegments((all) => all.map((x) => (x.id === n.id ? n : x)))} />
+                    </span>
                   </li>
                 ))}
               </ol>

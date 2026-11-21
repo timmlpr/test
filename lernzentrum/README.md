@@ -62,4 +62,4 @@ Weitere Dokumente: [PLAN.md](PLAN.md) · [SETUP_GUIDE.md](SETUP_GUIDE.md) · [AR
 [SECURITY.md](SECURITY.md) · [ADAPTERS.md](ADAPTERS.md)
 
 ## Changelog
-- 2026-11: Kontext-Korrektur (Regel- und Kontextschichten, Rückgängig, eigene Regeln). Offen: Gemini-Schiedsrichter, UI-Marker, Batch-Neukorrektur, Eval-Set.
+- 2026-11: Kontext-Korrektur (Regel- und Kontextschichten, Rückgängig, eigene Regeln). UI-Marker mit Popover und „Original anzeigen“. Offen: Gemini-Schiedsrichter, Batch-Neukorrektur, Eval-Set.
