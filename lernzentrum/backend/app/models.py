@@ -190,6 +190,7 @@ class Chunk(Base):
     start_s: Mapped[float | None] = mapped_column(Float, nullable=True)
     end_s: Mapped[float | None] = mapped_column(Float, nullable=True)
     text: Mapped[str] = mapped_column(EncryptedText)
+    alt_text: Mapped[str | None] = mapped_column(EncryptedText, nullable=True)  # raw STT where corrected (search only)
     local_vec: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
     gemini_vec: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
 

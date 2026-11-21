@@ -364,6 +364,13 @@ def segment_edit(sid: int, eid: str, body: EditAction, user: User = Depends(curr
     e = next((x for x in edits if x["id"] == eid), None)
     if e is None:
         raise HTTPException(404, "Korrektur nicht gefunden.")
+    rec = db.get(Recording, seg.recording_id)
+    if e.get("to") and e["kind"] != "norm":  # learning loop: weight of this ASR confusion in this module
+        key = f"{rec.module_id}|{e['from'].upper().replace(' ', '')}|{e['to']}"
+        w = dict((user.settings or {}).get("correction_weights", {}))
+        delta = -0.3 if body.action == "undo" else 0.1 if body.action in ("accept", "always") else 0
+        w[key] = round(min(1.3, max(0.0, w.get(key, 1.0) + delta)), 2)
+        user.settings = {**(user.settings or {}), "correction_weights": w}
     if body.action == "undo":
         e["status"] = "undone"
     elif body.action in ("accept", "redo", "always", "choose"):
@@ -373,7 +380,6 @@ def segment_edit(sid: int, eid: str, body: EditAction, user: User = Depends(curr
             raise HTTPException(422, "Kein Vorschlag vorhanden.")
         e["status"] = "accepted"
         if body.action == "always":
-            rec = db.get(Recording, seg.recording_id)
             key = e["from"].upper().replace(" ", "").replace(".", "").replace("-", "") if e["kind"] == "law" \
                 else e["from"].lower()
             rules = dict((user.settings or {}).get("correction_rules", {}))

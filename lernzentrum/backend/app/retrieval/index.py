@@ -53,21 +53,27 @@ def chunk_pages(pages: list[str], size: int = 900, overlap: int = 150) -> list[t
     return out
 
 
-def chunk_transcript(segments: list[tuple[float, float, str]], window_s: float = 60.0) -> list[tuple[float, float, str]]:
-    out: list[tuple[float, float, str]] = []
+def chunk_transcript(segments: list[tuple], window_s: float = 60.0) -> list[tuple]:
+    """Windows of ~60 s. Segments may carry a 4th element (original STT text) → returned as 4th element when it
+    differs from the corrected text, so search finds both."""
+    out: list[tuple] = []
     buf: list[str] = []
+    alt: list[str] = []
     w_start = None
     w_end = 0.0
-    for start, end, text in segments:
+    for seg in segments:
+        start, end, text = seg[:3]
         if w_start is None:
             w_start = start
         buf.append(text)
+        if len(seg) > 3 and seg[3] and seg[3] != text:
+            alt.append(seg[3])
         w_end = end
         if end - w_start >= window_s:
-            out.append((w_start, w_end, " ".join(buf)))
-            buf, w_start = [], None
+            out.append((w_start, w_end, " ".join(buf), " ".join(alt)))
+            buf, alt, w_start = [], [], None
     if buf and w_start is not None:
-        out.append((w_start, w_end, " ".join(buf)))
+        out.append((w_start, w_end, " ".join(buf), " ".join(alt)))
     return out
 
 
@@ -77,9 +83,10 @@ def index_document(db: Session, doc: Document, pages: list[str] | None = None,
     db.execute(delete(Chunk).where(Chunk.document_id == doc.id))
     rows: list[Chunk] = []
     if segments is not None:
-        for i, (s, e, t) in enumerate(chunk_transcript(segments)):
+        for i, (s, e, t, alt) in enumerate(chunk_transcript(segments)):
             rows.append(Chunk(user_id=doc.user_id, document_id=doc.id, module_id=doc.module_id, ordinal=i,
-                              start_s=s, end_s=e, text=t, local_vec=to_blob(local_vector(t))))
+                              start_s=s, end_s=e, text=t, alt_text=alt or None,
+                              local_vec=to_blob(local_vector(f"{t} {alt}"))))
     else:
         for i, (p, t) in enumerate(chunk_pages(pages or [])):
             rows.append(Chunk(user_id=doc.user_id, document_id=doc.id, module_id=doc.module_id, ordinal=i,
@@ -129,7 +136,7 @@ class Hit:
 class _ModuleIndex:
     def __init__(self, rows: list[tuple[Chunk, Document]]) -> None:
         self.rows = rows
-        self.toks = [terms(c.text) for c, _ in rows]
+        self.toks = [terms(f"{c.text} {c.alt_text or ''}") for c, _ in rows]
         self.tf = [Counter(t) for t in self.toks]
         self.df: Counter = Counter()
         for t in self.toks:

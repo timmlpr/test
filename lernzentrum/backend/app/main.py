@@ -18,6 +18,7 @@ from .jobs import periodic, worker
 from .learn import core  # noqa: F401
 from .live import pipeline as live_pipeline  # noqa: F401
 from .models import AudioChunk, Module, User
+from .correction import service as correction_service
 from .routers import auth, learn, library, live, moodle as moodle_router, planner, settings as settings_router
 from .seed import LIVE_DEMO_BF, seed_demo
 from .security import current_user
@@ -51,7 +52,7 @@ app = FastAPI(title="Lernzentrum API", version="1.0.0", lifespan=lifespan,
               docs_url="/api/docs" if not get_settings().is_prod else None, openapi_url="/api/openapi.json")
 
 for r in (auth.router, settings_router.router, planner.router, library.router, live.router, learn.router,
-          moodle_router.router):
+          moodle_router.router, correction_service.router):
     app.include_router(r)
 
 

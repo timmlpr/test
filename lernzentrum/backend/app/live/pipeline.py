@@ -40,14 +40,14 @@ def _module(db: Session, rec: Recording) -> Module | None:
 
 
 def answer_and_emit(db: Session, user: User, rec: Recording, ctx: LiveContext, question: str, at_s: float,
-                    trigger: str, mode: str | None = None) -> list[Answer]:
+                    trigger: str, mode: str | None = None, original: str | None = None) -> list[Answer]:
     mod = _module(db, rec)
     if mod and mod.exam_mode:
         emit(db, rec, "exam_guard", {"message": "Prüfungsmodus aktiv – keine Live-Antworten."})
         return []
     mode = mode or rec.answer_mode
     results = make_answer(db, user, question, module_id=rec.module_id, ctx=ctx, mode=mode,
-                          profile=mod.lecturer_profile if mod else None)
+                          profile=mod.lecturer_profile if mod else None, original=original)
     rows = persist(db, user, results, question=question, module_id=rec.module_id, recording_id=rec.id, at_s=at_s,
                    trigger=trigger, mode=mode, query=ctx.last_query)
     emit(db, rec, "answer", {"answers": [answer_dict(a) for a in rows], "context": ctx.summary()})
@@ -105,6 +105,7 @@ def ingest_segments(db: Session, user: User, rec: Recording, segments: list[tupl
                     *, late: bool = False) -> None:
     ctx = LiveContext.from_json(rec.context)
     call_names = (user.settings or {}).get("call_names", [])
+    to_adjudicate: list[TranscriptSegment] = []
     seen_norms = {s["key"] for s in ctx.statutes}
     for start, end, text in segments:
         text = text.strip()
@@ -146,11 +147,14 @@ def ingest_segments(db: Session, user: User, rec: Recording, segments: list[tupl
                                 original_text=original, edits=edits)
         db.add(seg)
         db.flush()
+        if any(e["status"] in ("check", "unclear") for e in edits):
+            to_adjudicate.append(seg)
         emit(db, rec, "transcript", {"id": seg.id, "start_s": start, "end_s": end, "text": text, "flags": flags,
                                      "original": original, "edits": edits})
         if not late and rec.live_answers:
+            unsure = any(e["status"] in ("check", "unclear") for e in edits)
             for q in questions[:2]:
-                answer_and_emit(db, user, rec, ctx, q.text, start, "auto")
+                answer_and_emit(db, user, rec, ctx, q.text, start, "auto", original=original if unsure else None)
     if not late:
         _match_slide(db, user, rec, ctx)
         last = (rec.context or {}).get("_suggested_at", -1e9)
@@ -169,6 +173,9 @@ def ingest_segments(db: Session, user: User, rec: Recording, segments: list[tupl
     else:
         rec.context = ctx.to_json() | {"_suggested_at": (rec.context or {}).get("_suggested_at", -1e9)}
     rec.duration_s = max(rec.duration_s or 0, ctx.now)
+    from ..correction.service import schedule_llm
+
+    schedule_llm(db, user, rec, [s.id for s in to_adjudicate])
     db.flush()
 
 
@@ -196,7 +203,10 @@ def _whisper_prompt(db: Session, rec: Recording) -> str:
     cur = [s["label"] for s in ctx.statutes[-3:]]
     if cur:
         parts.append("Zuletzt: " + ", ".join(cur) + ".")
-    vocab = [*ctx.topic_words(), *(mod.lecturer_profile or {}).get("vocab", [])] if mod else []
+    owner = db.get(User, rec.user_id)
+    own = [t["term"] for t in (owner.settings or {}).get("correction_vocab", [])
+           if t.get("module_id") in (None, rec.module_id)]
+    vocab = [*own, *ctx.topic_words(), *(mod.lecturer_profile or {}).get("vocab", [])] if mod else own
     if vocab:
         parts.append("Begriffe: " + ", ".join(dict.fromkeys(vocab)) + ".")
     return " ".join(parts)[:600]
@@ -221,6 +231,10 @@ def correct_segment(db: Session, user: User, rec: Recording, ctx: LiveContext, t
     c = Ctx(module_name=mod.name if mod else "", subject_laws=subject_laws(mod.name if mod else ""),
             recent_laws={s["law"] for s in ctx.statutes if s.get("law")}, material_keys=keys,
             user_rules={k: v["to"] for k, v in rules.items()},
+            vocab={t["term"] for t in (user.settings or {}).get("correction_vocab", [])
+                   if t.get("module_id") in (None, rec.module_id)},
+            weights={k.split("|", 1)[1]: v for k, v in (user.settings or {}).get("correction_weights", {}).items()
+                     if k.split("|", 1)[0] == str(rec.module_id)},
             auto=int(settings.get("auto", 90)), mark=int(settings.get("mark", 60)))
     return correct(text, c, sections=lambda law: loaded_sections(db, law))
 
@@ -275,7 +289,7 @@ def finalize_recording(db: Session, rec: Recording) -> Document:
         db.flush()
     doc.text = "\n".join(s.text for s in segs)
     doc.module_id = rec.module_id
-    index_document(db, doc, segments=[(s.start_s, s.end_s, s.text) for s in segs])
+    index_document(db, doc, segments=[(s.start_s, s.end_s, s.text, s.original_text) for s in segs])
     terms = [t for t in tokens(doc.text or "") if len(t) > 6]
     mod = _module(db, rec)
     if mod is not None and terms:

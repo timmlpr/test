@@ -90,3 +90,79 @@ def test_evaluation_set_precision():
 
     r = evaluate()
     assert r["samples"] >= 100 and r["precision"] >= 0.98, r["errors"]
+
+
+# ---------------------------------------------------------------- layer 4, batch, settings, search
+def test_llm_validation_rejects_paraphrase_and_foreign_edits():
+    from app.correction.service import validate_llm
+
+    edits = [{"from": "A B G", "to": "BGB", "status": "unclear", "candidates": [{"to": "BGB"}]}]
+    ok = {"corrected_text": "§ 433 BGB prüfen", "edits": [{"from": "A B G", "to": "BGB"}], "confidence": 0.9}
+    assert validate_llm("§ 433 A B G prüfen", edits, ok, 0.3) == {"A B G": ("BGB", 0.9)}
+    para = {"corrected_text": "Der Kaufvertrag nach dem Bürgerlichen Gesetzbuch muss man prüfen", "edits":
+            [{"from": "A B G", "to": "BGB"}], "confidence": 0.9}
+    assert validate_llm("§ 433 A B G prüfen", edits, para, 0.3) == {}
+    foreign = {"corrected_text": "§ 433 BGB prüfen", "edits": [{"from": "prüfen", "to": "lesen"}], "confidence": 1}
+    assert validate_llm("§ 433 A B G prüfen", edits, foreign, 0.3) == {}
+
+
+class _Judge:
+    name = "fake"
+
+    def generate(self, prompt, **kw):
+        import json as _j
+
+        if "Unsichere Stellen" in prompt:
+            return _j.dumps({"corrected_text": "Siehe § 433 BGB.", "edits": [{"from": "A B G", "to": "BGB"}],
+                             "confidence": 0.95})
+        return _j.dumps({"readings": []})
+
+    def embed(self, texts):
+        return None
+
+
+def test_llm_adjudicator_job_and_recorrect_idempotent(api, module):
+    from app.jobs import drain
+    from app.providers import registry
+
+    registry.OVERRIDES["llm"] = _Judge()
+    rec = api.post("/api/recordings/start", json={"module_id": module["id"], "consent": True}).json()
+    api.post(f"/api/recordings/{rec['id']}/simulate", json={"text": "Siehe § 433 A B G."})
+    drain()
+    seg = api.get(f"/api/recordings/{rec['id']}").json()["transcript"][0]
+    e = next(x for x in seg["edits"] if x["kind"] == "law")
+    assert e["layer"] == "llm" and e["to"] == "BGB" and "BGB" in seg["text"]
+    assert any(ev["kind"] == "transcript_update" for ev in api.get(f"/api/recordings/{rec['id']}/events").json())
+    # user undoes, then batch re-correction keeps the decision and is idempotent
+    api.post(f"/api/segments/{seg['id']}/edits/{e['id']}", json={"action": "undo"})
+    registry.OVERRIDES["llm"] = None
+    for _ in range(2):
+        job = api.post(f"/api/correction/modules/{module['id']}/recorrect").json()
+        drain()
+        j = next(x for x in api.get("/api/jobs").json() if x["id"] == job["job_id"])
+        assert j["status"] == "done" and j["progress"] == 1.0
+    seg2 = api.get(f"/api/recordings/{rec['id']}").json()["transcript"][0]
+    assert seg2["original"] == "Siehe § 433 A B G." and "BGB" not in seg2["text"]
+
+
+def test_settings_vocab_rules_export_and_search_original(api, module):
+    s = api.put("/api/correction/settings", json={"mode": "conservative"}).json()
+    assert (s["auto"], s["mark"]) == (95, 75)
+    assert api.put("/api/correction/settings", json={"auto": 50, "mark": 80}).status_code == 422
+    api.post("/api/correction/vocabulary", json={"term": "Kaufpreisanspruch", "module_id": module["id"]})
+    rec = api.post("/api/recordings/start", json={"module_id": module["id"], "consent": True}).json()
+    api.post(f"/api/recordings/{rec['id']}/simulate", json={"text": "Der Kaufpreis Anspruch und § 433 WWW."})
+    seg = api.get(f"/api/recordings/{rec['id']}").json()["transcript"][0]
+    assert "Kaufpreisanspruch" in seg["text"]
+    exp = api.get("/api/correction/export").json()
+    assert exp["vocabulary"][0]["term"] == "Kaufpreisanspruch"
+    assert api.post("/api/correction/import", json=exp).json()["vocabulary"] == 1
+    api.post(f"/api/recordings/{rec['id']}/finish")
+    from app.jobs import drain
+
+    drain()
+    hits = api.get("/api/search", params={"q": "WWW"}).json()["hits"]  # original wording still searchable
+    assert hits and hits[0]["start_s"] is not None
+    api.put("/api/correction/settings", json={"enabled": False})
+    api.post(f"/api/recordings/{rec['id']}/simulate", json={"text": "§ 433 WWW."})
+    assert api.get(f"/api/recordings/{rec['id']}").json()["transcript"][-1]["text"] == "§ 433 WWW."

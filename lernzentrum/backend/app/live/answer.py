@@ -211,12 +211,16 @@ def _reading_label(item: EvidenceItem) -> str:
 
 
 def answer(db: Session, user: User, question: str, *, module_id: int | None, ctx: LiveContext | None = None,
-           mode: str = "short", profile: dict | None = None, allow_fetch: bool = True) -> list[AnswerResult]:
+           mode: str = "short", profile: dict | None = None, allow_fetch: bool = True,
+           original: str | None = None) -> list[AnswerResult]:
     ctx = ctx or LiveContext()
     rq = resolve(question, ctx)
     items = gather_evidence(db, user, rq, module_id, allow_fetch=allow_fetch)
     by_sid = {it.sid: it for it in items}
     results: list[AnswerResult] = []
+    if original and profile is not None:
+        profile = {**profile, "notes": f"{profile.get('notes', '')} Unsicher korrigiertes Transkript, Original: "
+                                      f"„{original[:300]}“"}
     readings = _llm_answer(db, user, rq, ctx, items, mode, profile) if items else None
     if readings:
         for r in readings:

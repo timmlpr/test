@@ -32,6 +32,8 @@ class Ctx:
     recent_laws: set[str] = field(default_factory=set)
     material_keys: set[str] = field(default_factory=set)  # e.g. "bgb:433" found in module materials
     user_rules: dict[str, str] = field(default_factory=dict)  # upper-case slot/phrase → replacement
+    vocab: set[str] = field(default_factory=set)
+    weights: dict[str, float] = field(default_factory=dict)  # "FROM|TO" → learned factor (accept ↑, undo ↓)  # user's own vocabulary (module or global)
     auto: int = 90
     mark: int = 60
 
@@ -153,6 +155,7 @@ def correct(text: str, ctx: Ctx | None = None, sections=None) -> tuple[str, list
                 continue
             scored = []
             for law, base, why in cands:
+                base *= ctx.weights.get(f"{''.join(words).upper()}|{law.abbr}", 1.0)
                 ex = section_exists(law, norm, sections(law.abbr) if sections else None)
                 if ex is False:
                     continue
@@ -199,12 +202,14 @@ def correct(text: str, ctx: Ctx | None = None, sections=None) -> tuple[str, list
             edits.append({"start": m.start(), "end": m.end(), "from": text[m.start():m.end()], "to": term,
                           "kind": "term", "layer": "rule", "confidence": conf, "reason": "Fachbegriff"})
             taken.append((m.start(), m.end()))
-    for m in re.finditer(r"\b([A-ZÄÖÜ][a-zäöüß]+)[ \-]([A-ZÄÖÜ][a-zäöüß]+)\b", text):
+    vocab = {**VOCAB, **{v.lower(): v for v in ctx.vocab}}
+    for m in re.finditer(r"(?=\b([A-ZÄÖÜ][a-zäöüß]+)[ \-]([A-ZÄÖÜ][a-zäöüß]+)\b)", text):  # overlapping pairs
+        a, b = m.start(1), m.end(2)
         merged = m.group(1) + m.group(2).lower()
-        if merged.lower() in VOCAB and not any(a < m.end() and m.start() < b for a, b in taken):
-            edits.append({"start": m.start(), "end": m.end(), "from": m.group(0), "to": VOCAB[merged.lower()],
+        if merged.lower() in vocab and not any(x < b and a < y for x, y in taken):
+            edits.append({"start": a, "end": b, "from": text[a:b], "to": vocab[merged.lower()],
                           "kind": "term", "layer": "rule", "confidence": 91, "reason": "getrenntes Wort zusammengeführt"})
-            taken.append((m.start(), m.end()))
+            taken.append((a, b))
     for i, e in enumerate(sorted(edits, key=lambda e: e["start"])):
         e["id"] = f"e{i}"
         e["status"] = _status(e["confidence"], ctx) if e["to"] else "unclear"
