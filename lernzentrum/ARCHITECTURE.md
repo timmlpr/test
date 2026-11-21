@@ -59,3 +59,13 @@ mit LUKS für `/var/lib/docker/volumes` und Storage Box als Off-site-Ziel für `
 - Kein Web-Share-Target in Safari → iOS-Kurzbefehl mit persönlichem Upload-Link, E-Mail-Eingang, Mehrfach-Upload.
 - Keine zuverlässige Offline-Spracherkennung im Browser → offline aufnehmen, später transkribieren.
 - Wake Lock in installierten iPad-Web-Apps erst ab neueren iPadOS-Versionen → Hinweis „Automatische Sperre: Nie“.
+
+## Transcript correction (Kontext-Korrektur)
+`backend/app/correction/`: every transcript segment runs through `engine.correct()` before analysis.
+Layer 1: module vocabulary prompt for Whisper (`pipeline._whisper_prompt`, ≤ 600 chars; Groq has no hotwords).
+Layer 2: citation grammar (§/Paragraph + number/number words + Abs./S./Nr./lit./Alt./Hs. + law slot), law lexicon with
+section ranges (`lexicon.py`, exact norms if a law is loaded), spelled letters ("Be Ge Be", "E S T G"), confusion table
+(`confusions.json`), Kölner Phonetik/edit distance. Layer 3: scoring by section existence, module subject, laws
+mentioned in the lecture, citations in the module materials, user rules. Layer 5: ≥ 90 applied, ≥ 60 applied + marked,
+below → "unclear", not applied. `transcript_segments.original_text` is never modified; `edits` hold span, from, to,
+reason, confidence, status. API: `POST /api/segments/{id}/edits/{edit}` (accept/undo/redo/choose/always → module rule).

@@ -234,8 +234,8 @@ def recording_detail(rid: int, user: User = Depends(current_user), db: Session =
     numbers = db.scalars(select(NumberFact).where(NumberFact.recording_id == rid).order_by(NumberFact.at_s)).all()
     chunks = db.scalars(select(AudioChunk).where(AudioChunk.recording_id == rid).order_by(AudioChunk.seq)).all()
     return {**rec_out(db, rec),
-            "transcript": [{"id": s.id, "start_s": s.start_s, "end_s": s.end_s, "text": s.text, "flags": s.flags}
-                           for s in segs],
+            "transcript": [{"id": s.id, "start_s": s.start_s, "end_s": s.end_s, "text": s.text, "flags": s.flags,
+                            "original": s.original_text or s.text, "edits": s.edits or []} for s in segs],
             "answers": [answer_dict(a) for a in answers],
             "moments": [{"at_s": m.at_s, "cue": m.cue, "text": m.text} for m in moments],
             "numbers": [{"at_s": n.at_s, "kind": n.kind, "value": n.value, "context": n.context} for n in numbers],
@@ -343,3 +343,45 @@ def answer_feedback(aid: int, body: FeedbackIn, user: User = Depends(current_use
                                                               "at_s": a.at_s, "at": utcnow().isoformat()}]
     db.commit()
     return answer_dict(a)
+
+
+class EditAction(BaseModel):
+    action: str  # accept | undo | redo | choose | always
+    to: str | None = None
+    scope: str = "module"  # module | global (for "always")
+
+
+@router.post("/segments/{sid}/edits/{eid}")
+def segment_edit(sid: int, eid: str, body: EditAction, user: User = Depends(current_user),
+                 db: Session = Depends(get_db)) -> dict:
+    """Accept / undo / redo / choose candidate / "immer so korrigieren" for one correction. Original stays intact."""
+    from ..correction.engine import apply_edits
+
+    seg = db.get(TranscriptSegment, sid)
+    if not seg or seg.user_id != user.id:
+        raise HTTPException(404)
+    edits = [dict(e) for e in seg.edits or []]
+    e = next((x for x in edits if x["id"] == eid), None)
+    if e is None:
+        raise HTTPException(404, "Korrektur nicht gefunden.")
+    if body.action == "undo":
+        e["status"] = "undone"
+    elif body.action in ("accept", "redo", "always", "choose"):
+        if body.to:
+            e["to"] = body.to
+        if not e.get("to"):
+            raise HTTPException(422, "Kein Vorschlag vorhanden.")
+        e["status"] = "accepted"
+        if body.action == "always":
+            rec = db.get(Recording, seg.recording_id)
+            key = e["from"].upper().replace(" ", "").replace(".", "").replace("-", "") if e["kind"] == "law" \
+                else e["from"].lower()
+            rules = dict((user.settings or {}).get("correction_rules", {}))
+            rules[key] = {"to": e["to"], "module_id": None if body.scope == "global" else rec.module_id}
+            user.settings = {**(user.settings or {}), "correction_rules": rules}
+    else:
+        raise HTTPException(422, "Unbekannte Aktion.")
+    seg.edits = edits
+    seg.text = apply_edits(seg.original_text or seg.text, edits)
+    db.commit()
+    return {"id": seg.id, "text": seg.text, "original": seg.original_text, "edits": seg.edits}

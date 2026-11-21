@@ -111,6 +111,10 @@ def ingest_segments(db: Session, user: User, rec: Recording, segments: list[tupl
         if not text:
             continue
         flags: list[str] = ["late"] if late else []
+        original = text
+        text, edits = correct_segment(db, user, rec, ctx, text)
+        if any(e["status"] in ("check", "unclear") for e in edits):
+            flags.append("corrected?")
         ctx.add(start, end, text)
         cues = analyzers.keyword_alerts(text)
         if cues:
@@ -138,10 +142,12 @@ def ingest_segments(db: Session, user: User, rec: Recording, segments: list[tupl
         questions = detect(text, call_names)
         if questions:
             flags.append("question")
-        seg = TranscriptSegment(user_id=user.id, recording_id=rec.id, start_s=start, end_s=end, text=text, flags=flags)
+        seg = TranscriptSegment(user_id=user.id, recording_id=rec.id, start_s=start, end_s=end, text=text, flags=flags,
+                                original_text=original, edits=edits)
         db.add(seg)
         db.flush()
-        emit(db, rec, "transcript", {"id": seg.id, "start_s": start, "end_s": end, "text": text, "flags": flags})
+        emit(db, rec, "transcript", {"id": seg.id, "start_s": start, "end_s": end, "text": text, "flags": flags,
+                                     "original": original, "edits": edits})
         if not late and rec.live_answers:
             for q in questions[:2]:
                 answer_and_emit(db, user, rec, ctx, q.text, start, "auto")
@@ -179,12 +185,44 @@ def _duration(data: bytes, suffix: str) -> float:
 
 
 def _whisper_prompt(db: Session, rec: Recording) -> str:
+    """Layer 1: per-module vocabulary bias for Whisper (≤ 600 chars, rotated by the current topic)."""
+    from ..correction.lexicon import subject_laws
+
     mod = _module(db, rec)
-    terms = []
-    if mod:
-        terms.append(mod.name)
-        terms.extend((mod.lecturer_profile or {}).get("terms", [])[:30])
-    return "Vorlesung " + ", ".join(terms) + ". Paragraphen wie § 433 BGB, § 15 EStG."
+    ctx = LiveContext.from_json(rec.context)
+    laws = sorted(subject_laws(mod.name if mod else "")) or ["BGB", "HGB", "EStG", "AO", "UStG"]
+    parts = [f"Vorlesung {mod.name}, {mod.lecturer}." if mod else "Vorlesung."]
+    parts.append("Gesetze: " + ", ".join(laws[:8]) + ".")
+    cur = [s["label"] for s in ctx.statutes[-3:]]
+    if cur:
+        parts.append("Zuletzt: " + ", ".join(cur) + ".")
+    vocab = [*ctx.topic_words(), *(mod.lecturer_profile or {}).get("vocab", [])] if mod else []
+    if vocab:
+        parts.append("Begriffe: " + ", ".join(dict.fromkeys(vocab)) + ".")
+    return " ".join(parts)[:600]
+
+
+def correct_segment(db: Session, user: User, rec: Recording, ctx: LiveContext, text: str) -> tuple[str, list[dict]]:
+    """Kontext-Korrektur (layers 2/3/5) with module, lecture context, materials and the user's own rules."""
+    from ..correction.engine import Ctx, correct
+    from ..correction.lexicon import loaded_sections, subject_laws
+    from ..retrieval.index import _load
+
+    settings = (user.settings or {}).get("correction", {})
+    if settings.get("enabled") is False:
+        return text, []
+    mod = _module(db, rec)
+    keys: set[str] = set()
+    if rec.module_id:
+        for st in _load(db, user.id, rec.module_id, None).statutes:
+            keys |= st
+    rules = {k: v for k, v in (user.settings or {}).get("correction_rules", {}).items()
+             if v.get("module_id") in (None, rec.module_id)}
+    c = Ctx(module_name=mod.name if mod else "", subject_laws=subject_laws(mod.name if mod else ""),
+            recent_laws={s["law"] for s in ctx.statutes if s.get("law")}, material_keys=keys,
+            user_rules={k: v["to"] for k, v in rules.items()},
+            auto=int(settings.get("auto", 90)), mark=int(settings.get("mark", 60)))
+    return correct(text, c, sections=lambda law: loaded_sections(db, law))
 
 
 @handler("live.chunk")

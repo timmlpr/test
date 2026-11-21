@@ -250,6 +250,8 @@ class TranscriptSegment(Base):
     text: Mapped[str] = mapped_column(EncryptedText)
     speaker: Mapped[str] = mapped_column(String(40), default="")
     flags: Mapped[list] = mapped_column(JSON, default=list)  # question, keyword, gap, correction
+    original_text: Mapped[str | None] = mapped_column(EncryptedText, nullable=True)  # raw STT, never modified
+    edits: Mapped[list] = mapped_column(JSON, default=list)  # Kontext-Korrektur edits (see correction/engine.py)
 
 
 class LiveEvent(Base):

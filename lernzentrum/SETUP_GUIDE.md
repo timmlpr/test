@@ -58,3 +58,5 @@ Rahmen des Kontingents im Hintergrund. Fortschritt: Eingang → Verarbeitung. Un
   GoodNotes, Dateien, Mail, Safari), E-Mail-Postfach (IMAP), Cloud-Ordner (WebDAV).
 - **Einstellungen → Live-Modus**: wie dich der Dozent anspricht (damit direkte Fragen erkannt werden),
   Einwilligungs-Erinnerung, Antwortlänge.
+
+**Kontext-Korrektur:** Gesprochene Gesetzeszitate werden automatisch korrigiert (z. B. „§433 WWW“ → „§ 433 BGB“); das Original bleibt erhalten. Abschalten: Einstellung `correction.enabled=false`.

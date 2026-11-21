@@ -60,3 +60,6 @@ deploy/     docker-compose.prod.yml · Caddyfile · backup.sh · restore-test.sh
 
 Weitere Dokumente: [PLAN.md](PLAN.md) · [SETUP_GUIDE.md](SETUP_GUIDE.md) · [ARCHITECTURE.md](ARCHITECTURE.md) ·
 [SECURITY.md](SECURITY.md) · [ADAPTERS.md](ADAPTERS.md)
+
+## Changelog
+- 2026-11: Kontext-Korrektur (Regel- und Kontextschichten, Rückgängig, eigene Regeln). Offen: Gemini-Schiedsrichter, UI-Marker, Batch-Neukorrektur, Eval-Set.
