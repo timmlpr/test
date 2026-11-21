@@ -371,6 +371,29 @@ function ModuleSettings({ m, onSaved }: { m: Module; onSaved: () => void }) {
       <Toggle checked={f.exam_mode} onChange={(v) => setF({ ...f, exam_mode: v })} label="Prüfungsmodus" description="Schaltet Live-Antworten für dieses Modul ab." />
       {f.exam_mode && <Notice tone="warn">Lernzentrum darf während Prüfungen nicht benutzt werden – auch nicht zum Aufnehmen.</Notice>}
       <Button onClick={save}>Speichern</Button>
+      <Recorrect moduleId={m.id} />
     </Card>
+  );
+}
+
+function Recorrect({ moduleId }: { moduleId: number }) {
+  const [job, setJob] = useState<{ id: number; status: string; progress: number } | null>(null);
+  useEffect(() => {
+    if (!job || job.status === "done" || job.status === "error") return;
+    const t = setTimeout(async () => {
+      const j = (await api.get<{ id: number; status: string; progress: number }[]>(`/jobs?batch=recorrect${moduleId}`)).find((x) => x.id === job.id);
+      if (j) setJob(j);
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [job, moduleId]);
+  return (
+    <div className="border-t border-border pt-3">
+      <p className="mb-2 text-sm text-muted">Nach neuem Vokabular oder neuen Regeln: alle Transkripte dieses Moduls neu korrigieren. Deine Entscheidungen (übernommen/rückgängig) bleiben erhalten.</p>
+      <Button variant="outline" disabled={!!job && job.status !== "done"} onClick={async () => {
+        const r = await api.post<{ job_id: number }>(`/correction/modules/${moduleId}/recorrect`);
+        setJob({ id: r.job_id, status: "queued", progress: 0 });
+      }}>Alle Transkripte neu korrigieren</Button>
+      {job && <div className="mt-2"><Progress value={job.status === "done" ? 1 : job.progress} /><p className="mt-1 text-xs text-muted">{job.status === "done" ? "Fertig." : "Läuft …"}</p></div>}
+    </div>
   );
 }

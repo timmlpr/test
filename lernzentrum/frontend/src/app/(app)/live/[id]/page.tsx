@@ -64,6 +64,9 @@ export default function LiveSession() {
         case "transcript":
           setSegments((s) => [...s, p as unknown as Segment]);
           break;
+        case "transcript_update":
+          setSegments((s) => s.map((x) => (x.id === p.id ? { ...x, ...(p as unknown as Segment) } : x)));
+          break;
         case "answer": {
           const ans = p.answers as AnswerT[];
           if (!ans.length) break;
@@ -174,7 +177,7 @@ export default function LiveSession() {
         setConnected(true);
         apply([JSON.parse(m.data)]);
       };
-      ["transcript", "answer", "correction", "statute", "number", "keyword", "slide", "suggestions", "status", "exam_guard", "participation", "gap"].forEach((k) => es!.addEventListener(k, handler as EventListener));
+      ["transcript", "transcript_update", "answer", "correction", "statute", "number", "keyword", "slide", "suggestions", "status", "exam_guard", "participation", "gap"].forEach((k) => es!.addEventListener(k, handler as EventListener));
       es.onerror = () => {
         setConnected(false);
         if (++errors > 3 && es) {

@@ -59,4 +59,4 @@ Rahmen des Kontingents im Hintergrund. Fortschritt: Eingang → Verarbeitung. Un
 - **Einstellungen → Live-Modus**: wie dich der Dozent anspricht (damit direkte Fragen erkannt werden),
   Einwilligungs-Erinnerung, Antwortlänge.
 
-**Kontext-Korrektur:** Gesprochene Gesetzeszitate werden automatisch korrigiert (z. B. „§433 WWW“ → „§ 433 BGB“); das Original bleibt erhalten. Abschalten: Einstellung `correction.enabled=false`.
+**Kontext-Korrektur:** Gesprochene Gesetzeszitate werden automatisch korrigiert (z. B. „§433 WWW“ → „§ 433 BGB“); das Original bleibt erhalten. Einstellungen → Kontext-Korrektur: an/aus, Stil (vorsichtig/ausgewogen/mutig), Schwellen, KI-Prüfung, eigenes Vokabular, gelernte Regeln, Export/Import. Im Transkript: unterstrichene Stellen antippen → Grund, Rückgängig, andere Vorschläge, „Immer so korrigieren“. Moduleinstellungen → „Alle Transkripte neu korrigieren“.

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { PageHeader } from "@/components/app-shell";
 import { CalendarConnect, KeyField, MoodleConnect, type SecretInfo } from "@/components/connect";
+import { CorrectionSettings } from "@/components/correction-settings";
 import { useApp } from "@/components/providers";
 import { Button, Card, CardTitle, Input, Label, Notice, Progress, Select, StatusDot, Toggle } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -156,6 +157,8 @@ export default function SettingsPage() {
           </div>
           <p className="text-sm text-muted">Prüfungsmodus wird pro Modul in den Moduleinstellungen geschaltet.</p>
         </Card>
+
+        <CorrectionSettings />
 
         <Card>
           <CardTitle>Kostenlose Kontingente (heute)</CardTitle>

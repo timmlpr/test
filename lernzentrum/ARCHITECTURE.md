@@ -69,3 +69,10 @@ section ranges (`lexicon.py`, exact norms if a law is loaded), spelled letters (
 mentioned in the lecture, citations in the module materials, user rules. Layer 5: ≥ 90 applied, ≥ 60 applied + marked,
 below → "unclear", not applied. `transcript_segments.original_text` is never modified; `edits` hold span, from, to,
 reason, confidence, status. API: `POST /api/segments/{id}/edits/{edit}` (accept/undo/redo/choose/always → module rule).
+Layer 4 (`correction/service.py`): only segments with "check"/"unclear" edits go to Gemini (job `correction.llm`,
+cached, quota-aware, skipped with a notice without key); the answer may only pick one of the listed candidates and
+may change at most the candidate spans + `max_edit_ratio` of the text – otherwise it is discarded.
+Learning loop: accept/undo adjust per-module confusion weights; "immer so korrigieren" creates a module (or global)
+rule; own vocabulary feeds the merge rule and the Whisper prompt. `chunks.alt_text` keeps the original wording
+searchable. Batch: `POST /api/correction/modules/{id}/recorrect` (job with progress, keeps user decisions, idempotent).
+Live answers get the original wording in the prompt when a correction in the question is below the auto threshold.
